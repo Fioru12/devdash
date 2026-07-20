@@ -41,13 +41,11 @@ function setAccentColor(hex) {
   root.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${hex}, ${hex})`);
   localStorage.setItem('devdash-accent', hex);
 
-  // Update active state
   colorOptions.forEach(opt => opt.classList.remove('active'));
   const activeOpt = document.querySelector(`.color-opt[data-color="${hex}"]`);
   if (activeOpt) activeOpt.classList.add('active');
 }
 
-// Load saved accent color
 const savedAccent = localStorage.getItem('devdash-accent');
 if (savedAccent) setAccentColor(savedAccent);
 
@@ -74,7 +72,6 @@ colorOptions.forEach(opt => {
   });
 });
 
-// Shortcut C for color picker
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT') return;
   if (e.key.toLowerCase() === 'c') {
@@ -83,7 +80,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// ==================== SOUND EFFECTS (Web Audio) ====================
+// ==================== SOUND EFFECTS ====================
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSound(type) {
@@ -129,7 +126,7 @@ function playSound(type) {
         break;
     }
   } catch {
-    // Silently fail if audio is not supported
+    // Silently fail
   }
 }
 
@@ -137,7 +134,7 @@ function playSound(type) {
 const canvas = document.getElementById('particleCanvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
-const PARTICLE_COUNT = 50;
+const PARTICLE_COUNT = 30;
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
@@ -155,10 +152,10 @@ class Particle {
   reset() {
     this.x = Math.random() * canvas.width;
     this.y = Math.random() * canvas.height;
-    this.size = Math.random() * 2.5 + 0.5;
-    this.speedX = (Math.random() - 0.5) * 0.5;
-    this.speedY = (Math.random() - 0.5) * 0.5;
-    this.opacity = Math.random() * 0.5 + 0.1;
+    this.size = Math.random() * 1.5 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.3 + 0.1;
   }
 
   update() {
@@ -174,7 +171,7 @@ class Particle {
   draw() {
     const accentColor = getComputedStyle(document.documentElement)
       .getPropertyValue('--accent-rgb')
-      .trim() || '108, 99, 255';
+      .trim() || '0, 113, 227';
 
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -190,7 +187,7 @@ for (let i = 0; i < PARTICLE_COUNT; i++) {
 function drawConnections() {
   const accentColor = getComputedStyle(document.documentElement)
     .getPropertyValue('--accent-rgb')
-    .trim() || '108, 99, 255';
+    .trim() || '0, 113, 227';
 
   for (let i = 0; i < particles.length; i++) {
     for (let j = i + 1; j < particles.length; j++) {
@@ -198,8 +195,8 @@ function drawConnections() {
       const dy = particles[i].y - particles[j].y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (dist < 150) {
-        const opacity = (1 - dist / 150) * 0.15;
+      if (dist < 120) {
+        const opacity = (1 - dist / 120) * 0.08;
         ctx.beginPath();
         ctx.moveTo(particles[i].x, particles[i].y);
         ctx.lineTo(particles[j].x, particles[j].y);
@@ -446,7 +443,6 @@ async function loadSystem() {
     const cpuPct = Math.min(data.cpu.usage, 100);
     const ramPct = Math.min(data.memory.percent, 100);
 
-    // Animate counters
     animateCounter(document.getElementById('cpuValue'), cpuPct, '%');
     animateCounter(document.getElementById('ramValue'), ramPct, '%');
 
@@ -457,15 +453,14 @@ async function loadSystem() {
     document.getElementById('sysUptime').textContent = data.uptime;
     document.getElementById('sysLoad').textContent = data.loadAvg.join(' / ');
 
-    // Update sparkline history
     cpuHistory.push(cpuPct);
     ramHistory.push(ramPct);
     if (cpuHistory.length > MAX_HISTORY) cpuHistory.shift();
     if (ramHistory.length > MAX_HISTORY) ramHistory.shift();
 
     const accent = getComputedStyle(document.documentElement)
-      .getPropertyValue('--accent').trim() || '#6c63ff';
-    const success = '#10b981';
+      .getPropertyValue('--accent').trim() || '#0071e3';
+    const success = '#34c759';
 
     drawSparkline('sparklineCpu', cpuHistory, accent);
     drawSparkline('sparklineRam', ramHistory, success);
@@ -480,7 +475,7 @@ async function loadTodos() {
     const todos = await fetchAPI('/api/todos');
     const list = document.getElementById('todoList');
     if (todos.length === 0) {
-      list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 12px; font-size: 0.85rem;">Nessun task. Aggiungine uno! ✨</div>';
+      list.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 16px; font-size: 0.85rem; font-weight: 500;">Nessun task. Aggiungine uno! ✨</div>';
       return;
     }
     list.innerHTML = todos.map(t => `
@@ -621,7 +616,7 @@ document.addEventListener('click', (e) => {
 const observer = new MutationObserver(() => {
   if (cpuHistory.length > 0) {
     const accent = getComputedStyle(document.documentElement)
-      .getPropertyValue('--accent').trim() || '#6c63ff';
+      .getPropertyValue('--accent').trim() || '#0071e3';
     drawSparkline('sparklineCpu', cpuHistory, accent);
   }
 });
