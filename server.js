@@ -56,6 +56,42 @@ app.get('/api/weather', async (req, res) => {
   }
 });
 
+// --- Notizie (HackerNews) ---
+app.get('/api/news', async (req, res) => {
+  try {
+    // Get top 30 story IDs
+    const idsRes = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
+    const ids = await idsRes.json();
+    const topIds = ids.slice(0, 15);
+
+    // Fetch details for each story
+    const stories = await Promise.all(
+      topIds.map(async (id) => {
+        try {
+          const storyRes = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`);
+          const story = await storyRes.json();
+          return {
+            id: story.id,
+            title: story.title,
+            url: story.url || `https://news.ycombinator.com/item?id=${story.id}`,
+            score: story.score || 0,
+            author: story.by || 'anonymous',
+            time: story.time || 0,
+            comments: story.descendants || 0,
+          };
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    const validStories = stories.filter((s) => s !== null);
+    res.json(validStories);
+  } catch (err) {
+    res.json([]);
+  }
+});
+
 // --- Citazione ---
 const QUOTES_API = 'https://api.quotable.io/random';
 

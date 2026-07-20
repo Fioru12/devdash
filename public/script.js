@@ -20,6 +20,19 @@ themeToggle.addEventListener('click', () => {
   playSound('theme');
 });
 
+// ==================== HEADER DATE ====================
+function updateHeaderDate() {
+  const now = new Date();
+  const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+  const monthNames = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+  const day = dayNames[now.getDay()];
+  const date = now.getDate();
+  const month = monthNames[now.getMonth()];
+  const year = now.getFullYear();
+  document.getElementById('headerDate').textContent = `${day} ${date} ${month} ${year}`;
+}
+updateHeaderDate();
+
 // ==================== COLOR PICKER ====================
 const colorPickerBtn = document.getElementById('colorPickerBtn');
 const colorPopup = document.getElementById('colorPopup');
@@ -345,6 +358,69 @@ function drawSparkline(canvasId, data, color) {
   c.stroke();
 }
 
+// ==================== NEWS ====================
+let newsData = [];
+
+async function loadNews() {
+  try {
+    const stories = await fetchAPI('/api/news');
+    newsData = stories;
+    const list = document.getElementById('newsList');
+    
+    if (stories.length === 0) {
+      list.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Nessuna notizia disponibile</div>';
+      return;
+    }
+
+    list.innerHTML = stories.map((story, i) => {
+      const timeAgo = getTimeAgo(story.time);
+      return `
+        <a href="${story.url}" target="_blank" class="news-item" style="animation-delay: ${i * 0.05}s">
+          <div class="news-score">
+            <span>${story.score}</span>
+            <span class="news-score-label">punti</span>
+          </div>
+          <div class="news-content">
+            <div class="news-title">${escapeHtml(story.title)}</div>
+            <div class="news-meta">
+              <span>👤 ${story.author}</span>
+              <span>💬 ${story.comments}</span>
+              <span>🕐 ${timeAgo}</span>
+            </div>
+          </div>
+        </a>
+      `;
+    }).join('');
+
+    // Update ticker
+    updateTicker(stories);
+  } catch {
+    document.getElementById('newsList').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Errore caricamento notizie</div>';
+  }
+}
+
+function updateTicker(stories) {
+  const track = document.getElementById('tickerTrack');
+  if (stories.length === 0) {
+    track.innerHTML = '<span class="ticker-text">Nessuna notizia al momento</span>';
+    return;
+  }
+  // Create a long string with all titles separated by bullets
+  const text = stories.map(s => s.title).join('  •  ') + '  •  ';
+  track.innerHTML = `<span class="ticker-text">${escapeHtml(text)}</span>`;
+}
+
+function getTimeAgo(timestamp) {
+  const seconds = Math.floor(Date.now() / 1000) - timestamp;
+  if (seconds < 60) return 'ora';
+  const mins = Math.floor(seconds / 60);
+  if (mins < 60) return `${mins}m fa`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h fa`;
+  const days = Math.floor(hours / 24);
+  return `${days}g fa`;
+}
+
 // ==================== WIDGET: WEATHER ====================
 async function loadWeather() {
   hideError('weatherError');
@@ -629,9 +705,11 @@ document.addEventListener('DOMContentLoaded', () => {
   loadClocks();
   loadSystem();
   loadTodos();
+  loadNews();
 
   setInterval(loadWeather, 60000);
   setInterval(loadSystem, 2000);
   setInterval(loadQuote, 30000);
   setInterval(loadClocks, 10000);
+  setInterval(loadNews, 120000); // Refresh news every 2 min
 });

@@ -3,58 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#6c63ff" />
-  <meta name="description" content="DevDash - La tua dashboard personale" />
+  <meta name="theme-color" content="#0071e3" />
+  <meta name="description" content="DevDash - La tua dashboard informativa" />
   <link rel="manifest" href="/manifest.json" />
-  <link rel="apple-touch-icon" href="/icon-192.png" />
   <title>DevDash</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <!-- Particle canvas background -->
-  <canvas id="particleCanvas"></canvas>
-
   <div class="container">
-    <!-- Header -->
+    <!-- HEADER: Data/Ora + News Ticker -->
     <header class="header">
-      <div class="header-left">
-        <h1 class="logo">⎔ DevDash</h1>
-        <span class="header-subtitle"><span class="live-dot"></span>La tua dashboard personale</span>
+      <div class="header-top">
+        <div class="header-brand">
+          <h1 class="logo">⎔ DevDash</h1>
+          <span class="header-date" id="headerDate">--</span>
+        </div>
+        <div class="header-time">
+          <span class="live-dot"></span>
+          <span id="headerTime">--:--:--</span>
+        </div>
       </div>
-      <div class="header-right">
-        <div class="local-time" id="localTime">--:--:--</div>
-        <button class="color-picker-btn" id="colorPickerBtn" aria-label="Scegli colore" title="Colore accent (C)">🎨</button>
-        <button class="theme-toggle" id="themeToggle" aria-label="Cambia tema" title="Cambia tema (D)">
-          <span class="icon-sun">☀️</span>
-          <span class="icon-moon">🌙</span>
-        </button>
+      <!-- News Ticker -->
+      <div class="news-ticker" id="newsTicker">
+        <span class="ticker-label">🔥 LIVE</span>
+        <div class="ticker-track" id="tickerTrack">
+          <span class="ticker-text">Caricamento notizie...</span>
+        </div>
       </div>
     </header>
 
-    <!-- Color picker popup -->
-    <div class="color-popup" id="colorPopup">
-      <div class="color-popup-header">
-        <span>Colore accent</span>
-        <button class="color-popup-close" id="colorPopupClose">✕</button>
-      </div>
-      <div class="color-options" id="colorOptions">
-        <button class="color-opt" data-color="#6c63ff" style="background:#6c63ff" aria-label="Viola"></button>
-        <button class="color-opt" data-color="#3b82f6" style="background:#3b82f6" aria-label="Blu"></button>
-        <button class="color-opt" data-color="#06b6d4" style="background:#06b6d4" aria-label="Ciano"></button>
-        <button class="color-opt" data-color="#10b981" style="background:#10b981" aria-label="Verde"></button>
-        <button class="color-opt" data-color="#f59e0b" style="background:#f59e0b" aria-label="Giallo"></button>
-        <button class="color-opt" data-color="#f97316" style="background:#f97316" aria-label="Arancione"></button>
-        <button class="color-opt" data-color="#ef4444" style="background:#ef4444" aria-label="Rosso"></button>
-        <button class="color-opt" data-color="#ec4899" style="background:#ec4899" aria-label="Rosa"></button>
-      </div>
-    </div>
-
-    <!-- Grid Widgets -->
-    <div class="widgets-grid">
-
-      <!-- Widget: Meteo -->
+    <!-- TOP ROW: Meteo + Sistema -->
+    <div class="breaking-row">
       <div class="widget widget-weather" id="widgetWeather">
         <div class="widget-header">
           <span class="widget-icon">🌤️</span>
@@ -72,17 +53,61 @@
             <div class="weather-detail"><span class="detail-label">Vento</span><span id="weatherWind">-- km/h</span></div>
           </div>
           <div class="weather-city" id="weatherCity">📍 Rilevamento...</div>
-          <!-- Forecast 3 giorni -->
-          <div class="forecast-row" id="forecastRow">
-            <div class="forecast-card skeleton"></div>
-            <div class="forecast-card skeleton"></div>
-            <div class="forecast-card skeleton"></div>
-          </div>
+          <div class="forecast-row" id="forecastRow"></div>
         </div>
         <div class="widget-error" id="weatherError"></div>
       </div>
 
-      <!-- Widget: Orologio Mondiale -->
+      <div class="widget widget-system" id="widgetSystem">
+        <div class="widget-header">
+          <span class="widget-icon">💻</span>
+          <h2>Sistema</h2>
+          <button class="widget-refresh" data-widget="system" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body system-body" id="systemBody">
+          <div class="sys-cards">
+            <div class="sys-card">
+              <span class="sys-card-icon">⚡</span>
+              <span class="sys-card-label">CPU</span>
+              <span class="sys-card-value" id="cpuValue">--%</span>
+              <div class="sys-bar"><div class="sys-bar-fill cpu-bar" id="cpuBar"></div></div>
+            </div>
+            <div class="sys-card">
+              <span class="sys-card-icon">🧠</span>
+              <span class="sys-card-label">RAM</span>
+              <span class="sys-card-value" id="ramValue">--%</span>
+              <div class="sys-bar"><div class="sys-bar-fill ram-bar" id="ramBar"></div></div>
+            </div>
+          </div>
+          <div class="sys-meta">
+            <span id="sysHostname">-</span>
+            <span id="sysUptime">-</span>
+            <span id="sysLoad">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIDDLE: Notizie principali -->
+    <div class="widget widget-news" id="widgetNews">
+      <div class="widget-header">
+        <span class="widget-icon">📰</span>
+        <h2>Ultime notizie tech</h2>
+        <button class="widget-refresh" data-widget="news" aria-label="Aggiorna">↻</button>
+      </div>
+      <div class="widget-body news-body" id="newsBody">
+        <div class="news-list" id="newsList">
+          <div class="news-skeleton"></div>
+          <div class="news-skeleton"></div>
+          <div class="news-skeleton"></div>
+          <div class="news-skeleton"></div>
+          <div class="news-skeleton"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM ROW: Orologi + Citazione + Link -->
+    <div class="bottom-row">
       <div class="widget widget-clock" id="widgetClock">
         <div class="widget-header">
           <span class="widget-icon">🕐</span>
@@ -94,7 +119,6 @@
         </div>
       </div>
 
-      <!-- Widget: Citazione -->
       <div class="widget widget-quote" id="widgetQuote">
         <div class="widget-header">
           <span class="widget-icon">💬</span>
@@ -107,58 +131,6 @@
         </div>
       </div>
 
-      <!-- Widget: Sistema -->
-      <div class="widget widget-system" id="widgetSystem">
-        <div class="widget-header">
-          <span class="widget-icon">💻</span>
-          <h2>Sistema</h2>
-          <button class="widget-refresh" data-widget="system" aria-label="Aggiorna">↻</button>
-        </div>
-        <div class="widget-body system-body" id="systemBody">
-          <div class="stat-row">
-            <span class="stat-label">CPU</span>
-            <div class="stat-bar-container">
-              <div class="stat-bar cpu-bar" id="cpuBar"></div>
-            </div>
-            <span class="stat-value" id="cpuValue">--%</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">RAM</span>
-            <div class="stat-bar-container">
-              <div class="stat-bar ram-bar" id="ramBar"></div>
-            </div>
-            <span class="stat-value" id="ramValue">--%</span>
-          </div>
-          <!-- Sparkline -->
-          <div class="sparkline-container">
-            <canvas class="sparkline-canvas" id="sparklineCpu"></canvas>
-            <canvas class="sparkline-canvas" id="sparklineRam" style="margin-top: 4px;"></canvas>
-          </div>
-          <div class="system-info">
-            <div><span class="info-label">Host:</span> <span id="sysHostname">-</span></div>
-            <div><span class="info-label">OS:</span> <span id="sysPlatform">-</span></div>
-            <div><span class="info-label">Uptime:</span> <span id="sysUptime">-</span></div>
-            <div><span class="info-label">Carico:</span> <span id="sysLoad">-</span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Widget: TODO List -->
-      <div class="widget widget-todo" id="widgetTodo">
-        <div class="widget-header">
-          <span class="widget-icon">✅</span>
-          <h2>Todo List</h2>
-        </div>
-        <div class="widget-body todo-body" id="todoBody">
-          <form class="todo-form" id="todoForm">
-            <input type="text" class="todo-input" id="todoInput" placeholder="Nuovo task... (T per focus)" autocomplete="off" />
-            <button type="submit" class="todo-add-btn">+</button>
-          </form>
-          <ul class="todo-list" id="todoList"></ul>
-        </div>
-      </div>
-
-      <!-- Widget: Link Rapidi -->
       <div class="widget widget-links" id="widgetLinks">
         <div class="widget-header">
           <span class="widget-icon">🔗</span>
@@ -166,30 +138,18 @@
         </div>
         <div class="widget-body links-body" id="linksBody">
           <a href="https://github.com" target="_blank" class="link-card"><span>🐙</span> GitHub</a>
-          <a href="https://stackoverflow.com" target="_blank" class="link-card"><span>📚</span> Stack Overflow</a>
           <a href="https://news.ycombinator.com" target="_blank" class="link-card"><span>🔶</span> Hacker News</a>
           <a href="https://developer.mozilla.org" target="_blank" class="link-card"><span>📖</span> MDN</a>
           <a href="https://chatgpt.com" target="_blank" class="link-card"><span>🤖</span> ChatGPT</a>
           <a href="https://www.google.com" target="_blank" class="link-card"><span>🔍</span> Google</a>
+          <a href="https://stackoverflow.com" target="_blank" class="link-card"><span>📚</span> Stack Overflow</a>
         </div>
       </div>
-
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
-      <p>DevDash v1.0 &mdash; <span id="footerYear">2026</span> &mdash; <a href="https://github.com/Fioru12/devdash" target="_blank">GitHub</a></p>
+      <p>DevDash v2.0 &mdash; <span id="footerYear">2026</span> &mdash; <a href="https://github.com/Fioru12/devdash" target="_blank">GitHub</a></p>
     </footer>
-  </div>
-
-  <!-- Shortcut hint -->
-  <div class="shortcut-hint" id="shortcutHint">
-    <h4>⌨️ Shortcut</h4>
-    <div class="shortcut-row"><kbd>T</kbd><span>Focus todo</span></div>
-    <div class="shortcut-row"><kbd>R</kbd><span>Refresh tutto</span></div>
-    <div class="shortcut-row"><kbd>D</kbd><span>Cambia tema</span></div>
-    <div class="shortcut-row"><kbd>C</kbd><span>Colore accent</span></div>
-    <div class="shortcut-row"><kbd>?</kbd><span>Nascondi questo</span></div>
   </div>
 
   <script src="script.js"></script>
