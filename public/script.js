@@ -20,6 +20,69 @@ themeToggle.addEventListener('click', () => {
   playSound('theme');
 });
 
+// ==================== COLOR PICKER ====================
+const colorPickerBtn = document.getElementById('colorPickerBtn');
+const colorPopup = document.getElementById('colorPopup');
+const colorPopupClose = document.getElementById('colorPopupClose');
+const colorOptions = document.querySelectorAll('.color-opt');
+
+function getAccentRGB(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
+function setAccentColor(hex) {
+  const root = document.documentElement;
+  root.style.setProperty('--accent', hex);
+  root.style.setProperty('--accent-rgb', getAccentRGB(hex));
+  root.style.setProperty('--accent-light', hex);
+  root.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${hex}, ${hex})`);
+  localStorage.setItem('devdash-accent', hex);
+
+  // Update active state
+  colorOptions.forEach(opt => opt.classList.remove('active'));
+  const activeOpt = document.querySelector(`.color-opt[data-color="${hex}"]`);
+  if (activeOpt) activeOpt.classList.add('active');
+}
+
+// Load saved accent color
+const savedAccent = localStorage.getItem('devdash-accent');
+if (savedAccent) setAccentColor(savedAccent);
+
+colorPickerBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  colorPopup.classList.toggle('visible');
+});
+
+colorPopupClose.addEventListener('click', () => {
+  colorPopup.classList.remove('visible');
+});
+
+document.addEventListener('click', (e) => {
+  if (!colorPopup.contains(e.target) && e.target !== colorPickerBtn) {
+    colorPopup.classList.remove('visible');
+  }
+});
+
+colorOptions.forEach(opt => {
+  opt.addEventListener('click', () => {
+    const color = opt.dataset.color;
+    setAccentColor(color);
+    playSound('theme');
+  });
+});
+
+// Shortcut C for color picker
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key.toLowerCase() === 'c') {
+    e.preventDefault();
+    colorPopup.classList.toggle('visible');
+  }
+});
+
 // ==================== SOUND EFFECTS (Web Audio) ====================
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -102,7 +165,6 @@ class Particle {
     this.x += this.speedX;
     this.y += this.speedY;
 
-    // Wrap around edges
     if (this.x < 0) this.x = canvas.width;
     if (this.x > canvas.width) this.x = 0;
     if (this.y < 0) this.y = canvas.height;
@@ -121,7 +183,6 @@ class Particle {
   }
 }
 
-// Initialize particles
 for (let i = 0; i < PARTICLE_COUNT; i++) {
   particles.push(new Particle());
 }
@@ -205,6 +266,33 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+// ==================== ANIMATED COUNTER ====================
+function animateCounter(element, targetValue, suffix = '') {
+  const target = parseInt(targetValue);
+  if (isNaN(target)) {
+    element.textContent = targetValue + suffix;
+    return;
+  }
+
+  const duration = 800;
+  const startTime = performance.now();
+  const startValue = parseInt(element.textContent) || 0;
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easeProgress = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(startValue + (target - startValue) * easeProgress);
+    element.textContent = current + suffix;
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
 // ==================== SPARKLINE ====================
 const cpuHistory = [];
 const ramHistory = [];
@@ -282,6 +370,33 @@ async function loadWeather() {
     document.getElementById('weatherHumidity').textContent = `${data.humidity}%`;
     document.getElementById('weatherWind').textContent = `${data.windSpeed} km/h`;
     document.getElementById('weatherCity').textContent = `📍 ${data.city}`;
+
+    // Render forecast 3 giorni
+    const forecastRow = document.getElementById('forecastRow');
+    if (data.forecast && data.forecast.length > 0) {
+      const dayNames = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+      const monthNames = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+
+      forecastRow.innerHTML = data.forecast.map(day => {
+        const date = new Date(day.date + 'T00:00:00');
+        const dayName = dayNames[date.getDay()];
+        const month = monthNames[date.getMonth()];
+        const dayNum = date.getDate();
+
+        return `
+          <div class="forecast-card">
+            <div class="forecast-date">${dayName} ${dayNum} ${month}</div>
+            <div class="forecast-icon">${day.icon ? '🌤️' : '🌡️'}</div>
+            <div class="forecast-temps">
+              <span class="forecast-temp-max">${day.tempMax}°</span>
+              <span class="forecast-temp-min">${day.tempMin}°</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      forecastRow.innerHTML = '';
+    }
   } catch (err) {
     tempEl.classList.remove('loading');
     showError('weatherError', 'Errore di connessione');
@@ -331,10 +446,12 @@ async function loadSystem() {
     const cpuPct = Math.min(data.cpu.usage, 100);
     const ramPct = Math.min(data.memory.percent, 100);
 
+    // Animate counters
+    animateCounter(document.getElementById('cpuValue'), cpuPct, '%');
+    animateCounter(document.getElementById('ramValue'), ramPct, '%');
+
     document.getElementById('cpuBar').style.width = `${cpuPct}%`;
-    document.getElementById('cpuValue').textContent = `${cpuPct}%`;
     document.getElementById('ramBar').style.width = `${ramPct}%`;
-    document.getElementById('ramValue').textContent = `${ramPct}%`;
     document.getElementById('sysHostname').textContent = data.hostname;
     document.getElementById('sysPlatform').textContent = `${data.platform} (${data.arch})`;
     document.getElementById('sysUptime').textContent = data.uptime;
@@ -374,7 +491,6 @@ async function loadTodos() {
       </li>
     `).join('');
 
-    // Event listeners for checkboxes
     list.querySelectorAll('.todo-check').forEach(cb => {
       cb.addEventListener('change', async (e) => {
         const li = e.target.closest('.todo-item');
@@ -389,7 +505,6 @@ async function loadTodos() {
       });
     });
 
-    // Event listeners for delete buttons
     list.querySelectorAll('.todo-delete').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const li = e.target.closest('.todo-item');
@@ -407,7 +522,6 @@ async function loadTodos() {
   }
 }
 
-// Todo form submit
 document.getElementById('todoForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const input = document.getElementById('todoInput');
@@ -457,14 +571,12 @@ function showShortcutHint() {
   }, 4000);
 }
 
-// Show hint on first visit
 if (!localStorage.getItem('devdash-hint-seen')) {
   setTimeout(showShortcutHint, 2000);
   localStorage.setItem('devdash-hint-seen', 'true');
 }
 
 document.addEventListener('keydown', (e) => {
-  // Don't trigger when typing in input
   if (e.target.tagName === 'INPUT') return;
 
   switch (e.key.toLowerCase()) {
@@ -484,6 +596,10 @@ document.addEventListener('keydown', (e) => {
       e.preventDefault();
       themeToggle.click();
       break;
+    case 'c':
+      e.preventDefault();
+      colorPopup.classList.toggle('visible');
+      break;
     case '?':
       e.preventDefault();
       if (shortcutHint.classList.contains('visible')) {
@@ -495,7 +611,6 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Hide hint on click outside
 document.addEventListener('click', (e) => {
   if (!shortcutHint.contains(e.target)) {
     shortcutHint.classList.remove('visible');
@@ -520,9 +635,8 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSystem();
   loadTodos();
 
-  // Auto-refresh
   setInterval(loadWeather, 60000);
-  setInterval(loadSystem, 2000); // Sparkline needs fast updates
+  setInterval(loadSystem, 2000);
   setInterval(loadQuote, 30000);
   setInterval(loadClocks, 10000);
 });

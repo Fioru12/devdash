@@ -32,6 +32,15 @@ app.get('/api/weather', async (req, res) => {
     const current = data.current_condition?.[0];
     const location = data.nearest_area?.[0]?.areaName?.[0]?.value || 'Sconosciuta';
 
+    // Previsioni 3 giorni
+    const forecast = (data.weather || []).slice(0, 3).map((day) => ({
+      date: day.date,
+      tempMax: day.maxtempC,
+      tempMin: day.mintempC,
+      desc: day.hourly?.[0]?.weatherDesc?.[0]?.value || '',
+      icon: day.hourly?.[0]?.weatherIconUrl?.[0]?.value || '',
+    }));
+
     res.json({
       city: location,
       temp: current?.temp_C || 'N/A',
@@ -40,6 +49,7 @@ app.get('/api/weather', async (req, res) => {
       windSpeed: current?.windspeedKmph || 'N/A',
       desc: current?.weatherDesc?.[0]?.value || 'N/A',
       icon: current?.weatherIconUrl?.[0]?.value || '',
+      forecast,
     });
   } catch (err) {
     res.json({ error: 'Impossibile recuperare il meteo' });

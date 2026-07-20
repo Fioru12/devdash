@@ -139,6 +139,101 @@ body {
   color: var(--text-secondary);
 }
 
+/* ==================== COLOR PICKER ==================== */
+.color-picker-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all var(--transition);
+}
+
+.color-picker-btn:hover {
+  box-shadow: var(--shadow);
+  transform: scale(1.05);
+}
+
+.color-popup {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-hover);
+  z-index: 100;
+  min-width: 220px;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all var(--transition);
+}
+
+.color-popup.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.color-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.color-popup-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all var(--transition);
+}
+
+.color-popup-close:hover {
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.color-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.color-opt {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  padding: 0;
+}
+
+.color-opt:hover {
+  transform: scale(1.15);
+  border-color: var(--text-primary);
+}
+
+.color-opt.active {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--text-primary);
+}
+
 /* ==================== HEADER ==================== */
 .header {
   display: flex;
@@ -400,6 +495,58 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* Forecast 3 giorni */
+.forecast-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.forecast-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.forecast-card:hover {
+  background: rgba(var(--accent-rgb, 108, 99, 255), 0.05);
+  transform: translateY(-2px);
+}
+
+.forecast-date {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.forecast-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.forecast-temps {
+  display: flex;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.forecast-temp-max {
+  color: var(--text-primary);
+}
+
+.forecast-temp-min {
+  color: var(--text-muted);
 }
 
 .weather-main {

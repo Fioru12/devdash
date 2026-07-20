@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6c63ff" />
+  <meta name="description" content="DevDash - La tua dashboard personale" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icon-192.png" />
   <title>DevDash</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,12 +25,31 @@
       </div>
       <div class="header-right">
         <div class="local-time" id="localTime">--:--:--</div>
+        <button class="color-picker-btn" id="colorPickerBtn" aria-label="Scegli colore" title="Colore accent (C)">🎨</button>
         <button class="theme-toggle" id="themeToggle" aria-label="Cambia tema" title="Cambia tema (D)">
           <span class="icon-sun">☀️</span>
           <span class="icon-moon">🌙</span>
         </button>
       </div>
     </header>
+
+    <!-- Color picker popup -->
+    <div class="color-popup" id="colorPopup">
+      <div class="color-popup-header">
+        <span>Colore accent</span>
+        <button class="color-popup-close" id="colorPopupClose">✕</button>
+      </div>
+      <div class="color-options" id="colorOptions">
+        <button class="color-opt" data-color="#6c63ff" style="background:#6c63ff" aria-label="Viola"></button>
+        <button class="color-opt" data-color="#3b82f6" style="background:#3b82f6" aria-label="Blu"></button>
+        <button class="color-opt" data-color="#06b6d4" style="background:#06b6d4" aria-label="Ciano"></button>
+        <button class="color-opt" data-color="#10b981" style="background:#10b981" aria-label="Verde"></button>
+        <button class="color-opt" data-color="#f59e0b" style="background:#f59e0b" aria-label="Giallo"></button>
+        <button class="color-opt" data-color="#f97316" style="background:#f97316" aria-label="Arancione"></button>
+        <button class="color-opt" data-color="#ef4444" style="background:#ef4444" aria-label="Rosso"></button>
+        <button class="color-opt" data-color="#ec4899" style="background:#ec4899" aria-label="Rosa"></button>
+      </div>
+    </div>
 
     <!-- Grid Widgets -->
     <div class="widgets-grid">
@@ -49,6 +72,8 @@
             <div class="weather-detail"><span class="detail-label">Vento</span><span id="weatherWind">-- km/h</span></div>
           </div>
           <div class="weather-city" id="weatherCity">📍 Rilevamento...</div>
+          <!-- Forecast 3 giorni -->
+          <div class="forecast-row" id="forecastRow"></div>
         </div>
         <div class="widget-error" id="weatherError"></div>
       </div>
@@ -159,6 +184,7 @@
     <div class="shortcut-row"><kbd>T</kbd><span>Focus todo</span></div>
     <div class="shortcut-row"><kbd>R</kbd><span>Refresh tutto</span></div>
     <div class="shortcut-row"><kbd>D</kbd><span>Cambia tema</span></div>
+    <div class="shortcut-row"><kbd>C</kbd><span>Colore accent</span></div>
     <div class="shortcut-row"><kbd>?</kbd><span>Nascondi questo</span></div>
   </div>
 
