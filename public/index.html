@@ -12,17 +12,40 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body>
+  <canvas id="particleCanvas"></canvas>
+
   <div class="container">
-    <!-- HEADER: Data/Ora + News Ticker -->
+    <!-- HEADER -->
     <header class="header">
       <div class="header-top">
         <div class="header-brand">
           <h1 class="logo">⎔ DevDash</h1>
           <span class="header-date" id="headerDate">--</span>
         </div>
-        <div class="header-time">
-          <span class="live-dot"></span>
-          <span id="headerTime">--:--:--</span>
+        <div class="header-right">
+          <span class="local-time" id="localTime">--:--:--</span>
+          <button class="color-picker-btn" id="colorPickerBtn" aria-label="Scegli colore" title="Colore accent (C)">🎨</button>
+          <button class="theme-toggle" id="themeToggle" aria-label="Cambia tema" title="Cambia tema (D)">
+            <span class="icon-sun">☀️</span>
+            <span class="icon-moon">🌙</span>
+          </button>
+        </div>
+      </div>
+      <!-- Color picker -->
+      <div class="color-popup" id="colorPopup">
+        <div class="color-popup-header">
+          <span>Colore accent</span>
+          <button class="color-popup-close" id="colorPopupClose">✕</button>
+        </div>
+        <div class="color-options" id="colorOptions">
+          <button class="color-opt active" data-color="#0071e3" style="background:#0071e3"></button>
+          <button class="color-opt" data-color="#6c63ff" style="background:#6c63ff"></button>
+          <button class="color-opt" data-color="#3b82f6" style="background:#3b82f6"></button>
+          <button class="color-opt" data-color="#06b6d4" style="background:#06b6d4"></button>
+          <button class="color-opt" data-color="#10b981" style="background:#10b981"></button>
+          <button class="color-opt" data-color="#f59e0b" style="background:#f59e0b"></button>
+          <button class="color-opt" data-color="#ef4444" style="background:#ef4444"></button>
+          <button class="color-opt" data-color="#ec4899" style="background:#ec4899"></button>
         </div>
       </div>
       <!-- News Ticker -->
@@ -88,7 +111,7 @@
       </div>
     </div>
 
-    <!-- MIDDLE: Notizie principali -->
+    <!-- MIDDLE: Notizie -->
     <div class="widget widget-news" id="widgetNews">
       <div class="widget-header">
         <span class="widget-icon">📰</span>
@@ -100,13 +123,11 @@
           <div class="news-skeleton"></div>
           <div class="news-skeleton"></div>
           <div class="news-skeleton"></div>
-          <div class="news-skeleton"></div>
-          <div class="news-skeleton"></div>
         </div>
       </div>
     </div>
 
-    <!-- BOTTOM ROW: Orologi + Citazione + Link -->
+    <!-- BOTTOM ROW -->
     <div class="bottom-row">
       <div class="widget widget-clock" id="widgetClock">
         <div class="widget-header">
@@ -148,8 +169,17 @@
     </div>
 
     <footer class="footer">
-      <p>DevDash v2.0 &mdash; <span id="footerYear">2026</span> &mdash; <a href="https://github.com/Fioru12/devdash" target="_blank">GitHub</a></p>
+      <p>DevDash v2.1 &mdash; <span id="footerYear">2026</span> &mdash; <a href="https://github.com/Fioru12/devdash" target="_blank">GitHub</a></p>
     </footer>
+  </div>
+
+  <!-- Shortcut hint -->
+  <div class="shortcut-hint" id="shortcutHint">
+    <h4>⌨️ Shortcut</h4>
+    <div class="shortcut-row"><kbd>R</kbd><span>Refresh tutto</span></div>
+    <div class="shortcut-row"><kbd>D</kbd><span>Cambia tema</span></div>
+    <div class="shortcut-row"><kbd>C</kbd><span>Colore accent</span></div>
+    <div class="shortcut-row"><kbd>?</kbd><span>Nascondi</span></div>
   </div>
 
   <script src="script.js"></script>
