@@ -17,7 +17,152 @@ setTheme(getPreferredTheme());
 themeToggle.addEventListener('click', () => {
   const current = document.documentElement.getAttribute('data-theme');
   setTheme(current === 'dark' ? 'light' : 'dark');
+  playSound('theme');
 });
+
+// ==================== SOUND EFFECTS (Web Audio) ====================
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSound(type) {
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    switch (type) {
+      case 'todo':
+        osc.frequency.value = 800;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+        break;
+      case 'delete':
+        osc.frequency.value = 400;
+        osc.type = 'sawtooth';
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.2);
+        break;
+      case 'refresh':
+        osc.frequency.value = 600;
+        osc.type = 'triangle';
+        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+        break;
+      case 'theme':
+        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(600, audioCtx.currentTime + 0.1);
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+        break;
+    }
+  } catch {
+    // Silently fail if audio is not supported
+  }
+}
+
+// ==================== PARTICLE CANVAS ====================
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+const PARTICLE_COUNT = 50;
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 2.5 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.5;
+    this.speedY = (Math.random() - 0.5) * 0.5;
+    this.opacity = Math.random() * 0.5 + 0.1;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    // Wrap around edges
+    if (this.x < 0) this.x = canvas.width;
+    if (this.x > canvas.width) this.x = 0;
+    if (this.y < 0) this.y = canvas.height;
+    if (this.y > canvas.height) this.y = 0;
+  }
+
+  draw() {
+    const accentColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--accent-rgb')
+      .trim() || '108, 99, 255';
+
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${accentColor}, ${this.opacity})`;
+    ctx.fill();
+  }
+}
+
+// Initialize particles
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  particles.push(new Particle());
+}
+
+function drawConnections() {
+  const accentColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--accent-rgb')
+    .trim() || '108, 99, 255';
+
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < 150) {
+        const opacity = (1 - dist / 150) * 0.15;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(${accentColor}, ${opacity})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+
+  drawConnections();
+  requestAnimationFrame(animateParticles);
+}
+
+animateParticles();
 
 // ==================== LOCAL TIME ====================
 function updateLocalTime() {
@@ -34,7 +179,7 @@ setInterval(updateLocalTime, 1000);
 // ==================== FOOTER YEAR ====================
 document.getElementById('footerYear').textContent = new Date().getFullYear();
 
-// ==================== API FETCH WITH ERROR HANDLING ====================
+// ==================== API FETCH ====================
 async function fetchAPI(url, options) {
   const res = await fetch(url, options);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -60,17 +205,77 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+// ==================== SPARKLINE ====================
+const cpuHistory = [];
+const ramHistory = [];
+const MAX_HISTORY = 60;
+
+function drawSparkline(canvasId, data, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+
+  const c = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+  const padding = 2;
+
+  c.clearRect(0, 0, w, h);
+
+  if (data.length < 2) return;
+
+  const max = Math.max(...data, 1);
+  const min = Math.min(...data, 0);
+  const range = max - min || 1;
+
+  // Draw fill
+  c.beginPath();
+  c.moveTo(0, h - padding);
+  data.forEach((val, i) => {
+    const x = (i / (data.length - 1)) * (w - padding * 2) + padding;
+    const y = (h - padding) - ((val - min) / range) * (h - padding * 2);
+    c.lineTo(x, y);
+  });
+  c.lineTo(w - padding, h - padding);
+  c.closePath();
+
+  const gradient = c.createLinearGradient(0, 0, 0, h);
+  gradient.addColorStop(0, color.replace('0.', '0.15'));
+  gradient.addColorStop(1, color.replace('0.', '0.01'));
+  c.fillStyle = gradient;
+  c.fill();
+
+  // Draw line
+  c.beginPath();
+  data.forEach((val, i) => {
+    const x = (i / (data.length - 1)) * (w - padding * 2) + padding;
+    const y = (h - padding) - ((val - min) / range) * (h - padding * 2);
+    if (i === 0) c.moveTo(x, y);
+    else c.lineTo(x, y);
+  });
+  c.strokeStyle = color;
+  c.lineWidth = 1.5;
+  c.stroke();
+}
+
 // ==================== WIDGET: WEATHER ====================
 async function loadWeather() {
   hideError('weatherError');
+  const tempEl = document.getElementById('weatherTemp');
+  tempEl.classList.add('loading');
+
   try {
     const data = await fetchAPI('/api/weather');
 
     if (data.error) {
       showError('weatherError', data.error);
+      tempEl.classList.remove('loading');
       return;
     }
 
+    tempEl.classList.remove('loading');
     document.getElementById('weatherTemp').textContent = `${data.temp}°`;
     document.getElementById('weatherDesc').textContent = data.desc;
     document.getElementById('weatherFeels').textContent = `${data.feelsLike}°`;
@@ -78,6 +283,7 @@ async function loadWeather() {
     document.getElementById('weatherWind').textContent = `${data.windSpeed} km/h`;
     document.getElementById('weatherCity').textContent = `📍 ${data.city}`;
   } catch (err) {
+    tempEl.classList.remove('loading');
     showError('weatherError', 'Errore di connessione');
   }
 }
@@ -86,8 +292,13 @@ async function loadWeather() {
 async function loadQuote() {
   try {
     const data = await fetchAPI('/api/quote');
-    document.getElementById('quoteText').textContent = data.content;
-    document.getElementById('quoteAuthor').textContent = `— ${data.author}`;
+    const textEl = document.getElementById('quoteText');
+    textEl.style.opacity = '0';
+    setTimeout(() => {
+      textEl.textContent = data.content;
+      textEl.style.opacity = '1';
+      document.getElementById('quoteAuthor').textContent = `— ${data.author}`;
+    }, 200);
   } catch {
     document.getElementById('quoteText').textContent = 'Carica una nuova citazione...';
     document.getElementById('quoteAuthor').textContent = '';
@@ -128,6 +339,19 @@ async function loadSystem() {
     document.getElementById('sysPlatform').textContent = `${data.platform} (${data.arch})`;
     document.getElementById('sysUptime').textContent = data.uptime;
     document.getElementById('sysLoad').textContent = data.loadAvg.join(' / ');
+
+    // Update sparkline history
+    cpuHistory.push(cpuPct);
+    ramHistory.push(ramPct);
+    if (cpuHistory.length > MAX_HISTORY) cpuHistory.shift();
+    if (ramHistory.length > MAX_HISTORY) ramHistory.shift();
+
+    const accent = getComputedStyle(document.documentElement)
+      .getPropertyValue('--accent').trim() || '#6c63ff';
+    const success = '#10b981';
+
+    drawSparkline('sparklineCpu', cpuHistory, accent);
+    drawSparkline('sparklineRam', ramHistory, success);
   } catch {
     // silently fail
   }
@@ -155,11 +379,12 @@ async function loadTodos() {
       cb.addEventListener('change', async (e) => {
         const li = e.target.closest('.todo-item');
         const id = li.dataset.id;
-        await fetchAPI(`/api/todos/${id}`, {
+        await fetch(`/api/todos/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ done: e.target.checked }),
         });
+        if (e.target.checked) playSound('todo');
         loadTodos();
       });
     });
@@ -168,9 +393,13 @@ async function loadTodos() {
     list.querySelectorAll('.todo-delete').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const li = e.target.closest('.todo-item');
+        li.classList.add('removing');
+        playSound('delete');
         const id = li.dataset.id;
-        await fetch(`/api/todos/${id}`, { method: 'DELETE' });
-        loadTodos();
+        setTimeout(async () => {
+          await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+          loadTodos();
+        }, 300);
       });
     });
   } catch {
@@ -192,6 +421,7 @@ document.getElementById('todoForm').addEventListener('submit', async (e) => {
       body: JSON.stringify({ text }),
     });
     input.value = '';
+    playSound('todo');
     loadTodos();
   } catch {
     // silently fail
@@ -202,6 +432,10 @@ document.getElementById('todoForm').addEventListener('submit', async (e) => {
 document.querySelectorAll('.widget-refresh').forEach(btn => {
   btn.addEventListener('click', (e) => {
     const widget = e.target.dataset.widget;
+    btn.classList.add('spinning');
+    playSound('refresh');
+    setTimeout(() => btn.classList.remove('spinning'), 600);
+
     switch (widget) {
       case 'weather': loadWeather(); break;
       case 'quote': loadQuote(); break;
@@ -211,6 +445,73 @@ document.querySelectorAll('.widget-refresh').forEach(btn => {
   });
 });
 
+// ==================== KEYBOARD SHORTCUTS ====================
+const shortcutHint = document.getElementById('shortcutHint');
+let hintTimeout;
+
+function showShortcutHint() {
+  shortcutHint.classList.add('visible');
+  clearTimeout(hintTimeout);
+  hintTimeout = setTimeout(() => {
+    shortcutHint.classList.remove('visible');
+  }, 4000);
+}
+
+// Show hint on first visit
+if (!localStorage.getItem('devdash-hint-seen')) {
+  setTimeout(showShortcutHint, 2000);
+  localStorage.setItem('devdash-hint-seen', 'true');
+}
+
+document.addEventListener('keydown', (e) => {
+  // Don't trigger when typing in input
+  if (e.target.tagName === 'INPUT') return;
+
+  switch (e.key.toLowerCase()) {
+    case 't':
+      e.preventDefault();
+      document.getElementById('todoInput').focus();
+      break;
+    case 'r':
+      e.preventDefault();
+      loadWeather();
+      loadQuote();
+      loadClocks();
+      loadSystem();
+      playSound('refresh');
+      break;
+    case 'd':
+      e.preventDefault();
+      themeToggle.click();
+      break;
+    case '?':
+      e.preventDefault();
+      if (shortcutHint.classList.contains('visible')) {
+        shortcutHint.classList.remove('visible');
+      } else {
+        showShortcutHint();
+      }
+      break;
+  }
+});
+
+// Hide hint on click outside
+document.addEventListener('click', (e) => {
+  if (!shortcutHint.contains(e.target)) {
+    shortcutHint.classList.remove('visible');
+  }
+});
+
+// ==================== THEME CHANGE SPARKLINE REPAINT ====================
+const observer = new MutationObserver(() => {
+  if (cpuHistory.length > 0) {
+    const accent = getComputedStyle(document.documentElement)
+      .getPropertyValue('--accent').trim() || '#6c63ff';
+    drawSparkline('sparklineCpu', cpuHistory, accent);
+  }
+});
+observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
   loadWeather();
@@ -219,9 +520,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSystem();
   loadTodos();
 
-  // Auto-refresh weather & system every 60s, quote every 30s, clocks every 10s
+  // Auto-refresh
   setInterval(loadWeather, 60000);
-  setInterval(loadSystem, 60000);
+  setInterval(loadSystem, 2000); // Sparkline needs fast updates
   setInterval(loadQuote, 30000);
   setInterval(loadClocks, 10000);
 });
