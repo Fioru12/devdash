@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevDash</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="logo">⎔ DevDash</h1>
+        <span class="header-subtitle">La tua dashboard personale</span>
+      </div>
+      <div class="header-right">
+        <div class="local-time" id="localTime">--:--:--</div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Cambia tema">
+          <span class="icon-sun">☀️</span>
+          <span class="icon-moon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Grid Widgets -->
+    <div class="widgets-grid">
+
+      <!-- Widget: Meteo -->
+      <div class="widget widget-weather" id="widgetWeather">
+        <div class="widget-header">
+          <span class="widget-icon">🌤️</span>
+          <h2>Meteo</h2>
+          <button class="widget-refresh" data-widget="weather" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body weather-body" id="weatherBody">
+          <div class="weather-main">
+            <span class="weather-temp" id="weatherTemp">--°</span>
+            <span class="weather-desc" id="weatherDesc">Caricamento...</span>
+          </div>
+          <div class="weather-details">
+            <div class="weather-detail"><span class="detail-label">Percepita</span><span id="weatherFeels">--°</span></div>
+            <div class="weather-detail"><span class="detail-label">Umidità</span><span id="weatherHumidity">--%</span></div>
+            <div class="weather-detail"><span class="detail-label">Vento</span><span id="weatherWind">-- km/h</span></div>
+          </div>
+          <div class="weather-city" id="weatherCity">Rilevamento...</div>
+        </div>
+        <div class="widget-error" id="weatherError"></div>
+      </div>
+
+      <!-- Widget: Orologio Mondiale -->
+      <div class="widget widget-clock" id="widgetClock">
+        <div class="widget-header">
+          <span class="widget-icon">🕐</span>
+          <h2>Orologi</h2>
+          <button class="widget-refresh" data-widget="clock" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body" id="clockBody">
+          <div class="clock-list" id="clockList"></div>
+        </div>
+      </div>
+
+      <!-- Widget: Citazione -->
+      <div class="widget widget-quote" id="widgetQuote">
+        <div class="widget-header">
+          <span class="widget-icon">💬</span>
+          <h2>Citazione</h2>
+          <button class="widget-refresh" data-widget="quote" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body quote-body" id="quoteBody">
+          <blockquote class="quote-text" id="quoteText">Caricamento...</blockquote>
+          <cite class="quote-author" id="quoteAuthor">-</cite>
+        </div>
+      </div>
+
+      <!-- Widget: Sistema -->
+      <div class="widget widget-system" id="widgetSystem">
+        <div class="widget-header">
+          <span class="widget-icon">💻</span>
+          <h2>Sistema</h2>
+          <button class="widget-refresh" data-widget="system" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body system-body" id="systemBody">
+          <div class="stat-row">
+            <span class="stat-label">CPU</span>
+            <div class="stat-bar-container">
+              <div class="stat-bar cpu-bar" id="cpuBar"></div>
+            </div>
+            <span class="stat-value" id="cpuValue">0%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">RAM</span>
+            <div class="stat-bar-container">
+              <div class="stat-bar ram-bar" id="ramBar"></div>
+            </div>
+            <span class="stat-value" id="ramValue">0%</span>
+          </div>
+          <div class="system-info">
+            <div><span class="info-label">Host:</span> <span id="sysHostname">-</span></div>
+            <div><span class="info-label">OS:</span> <span id="sysPlatform">-</span></div>
+            <div><span class="info-label">Uptime:</span> <span id="sysUptime">-</span></div>
+            <div><span class="info-label">Carico:</span> <span id="sysLoad">-</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Widget: TODO List -->
+      <div class="widget widget-todo" id="widgetTodo">
+        <div class="widget-header">
+          <span class="widget-icon">✅</span>
+          <h2>Todo List</h2>
+        </div>
+        <div class="widget-body todo-body" id="todoBody">
+          <form class="todo-form" id="todoForm">
+            <input type="text" class="todo-input" id="todoInput" placeholder="Nuovo task..." autocomplete="off" />
+            <button type="submit" class="todo-add-btn">+</button>
+          </form>
+          <ul class="todo-list" id="todoList"></ul>
+        </div>
+      </div>
+
+      <!-- Widget: Link Rapidi -->
+      <div class="widget widget-links" id="widgetLinks">
+        <div class="widget-header">
+          <span class="widget-icon">🔗</span>
+          <h2>Link Rapidi</h2>
+        </div>
+        <div class="widget-body links-body" id="linksBody">
+          <a href="https://github.com" target="_blank" class="link-card"><span>🐙</span> GitHub</a>
+          <a href="https://stackoverflow.com" target="_blank" class="link-card"><span>📚</span> Stack Overflow</a>
+          <a href="https://news.ycombinator.com" target="_blank" class="link-card"><span>🔶</span> Hacker News</a>
+          <a href="https://developer.mozilla.org" target="_blank" class="link-card"><span>📖</span> MDN</a>
+          <a href="https://chat.openai.com" target="_blank" class="link-card"><span>🤖</span> ChatGPT</a>
+          <a href="https://www.google.com" target="_blank" class="link-card"><span>🔍</span> Google</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>DevDash v1.0 &mdash; <span id="footerYear">2026</span> &mdash; <a href="https://github.com" target="_blank">GitHub</a></p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
