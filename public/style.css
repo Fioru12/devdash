@@ -8,15 +8,15 @@
 :root {
   --bg-primary: #f5f5f7;
   --bg-secondary: #ffffff;
-  --bg-card: rgba(255, 255, 255, 0.8);
-  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --bg-card: rgba(255, 255, 255, 0.72);
+  --bg-card-hover: rgba(255, 255, 255, 0.88);
   --text-primary: #1d1d1f;
   --text-secondary: #6e6e73;
   --text-tertiary: #86868b;
-  --border: rgba(0, 0, 0, 0.04);
-  --border-hover: rgba(0, 0, 0, 0.08);
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --border: rgba(0, 0, 0, 0.06);
+  --border-hover: rgba(0, 0, 0, 0.12);
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.08);
   --accent: #0071e3;
   --accent-light: #0077ed;
   --accent-rgb: 0, 113, 227;
@@ -25,26 +25,26 @@
   --success-rgb: 52, 199, 89;
   --warning: #ff9500;
   --danger: #ff3b30;
-  --radius: 20px;
-  --radius-sm: 14px;
-  --radius-xs: 10px;
-  --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  --spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --radius: 24px;
+  --radius-sm: 18px;
+  --radius-xs: 12px;
+  --transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --spring: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme="dark"] {
   --bg-primary: #000000;
   --bg-secondary: #1c1c1e;
-  --bg-card: rgba(28, 28, 30, 0.8);
-  --bg-card-hover: rgba(28, 28, 30, 0.95);
+  --bg-card: rgba(28, 28, 30, 0.72);
+  --bg-card-hover: rgba(28, 28, 30, 0.88);
   --text-primary: #f5f5f7;
   --text-secondary: #a1a1a6;
   --text-tertiary: #6e6e73;
-  --border: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.5);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.15);
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 html {
@@ -85,9 +85,9 @@ body {
 
 /* ==================== CONTAINER ==================== */
 .container {
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 40px 32px;
+  padding: 48px 40px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -263,14 +263,14 @@ body {
 .header {
   display: flex;
   flex-direction: column;
-  padding: 24px 32px;
+  padding: 28px 36px;
   background: var(--bg-card);
-  backdrop-filter: blur(60px) saturate(200%);
-  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  backdrop-filter: blur(80px) saturate(200%);
+  -webkit-backdrop-filter: blur(80px) saturate(200%);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  margin-bottom: 32px;
+  margin-bottom: 36px;
   transition: all var(--transition);
   position: relative;
   overflow: hidden;
@@ -432,18 +432,18 @@ body {
 /* ==================== WIDGET BASE ==================== */
 .widget {
   background: var(--bg-card);
-  backdrop-filter: blur(60px) saturate(200%);
-  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  backdrop-filter: blur(80px) saturate(200%);
+  -webkit-backdrop-filter: blur(80px) saturate(200%);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 28px;
+  padding: 32px;
   transition: all var(--ease-out);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .widget::before {
@@ -464,7 +464,7 @@ body {
 
 .widget:hover {
   box-shadow: var(--shadow-hover);
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   border-color: var(--border-hover);
   background: var(--bg-card-hover);
 }
@@ -554,7 +554,7 @@ body {
 }
 
 .weather-temp {
-  font-size: 5rem;
+  font-size: 5.5rem;
   font-weight: 200;
   background: var(--accent-gradient);
   -webkit-background-clip: text;
@@ -562,7 +562,7 @@ body {
   background-clip: text;
   transition: all var(--transition);
   line-height: 1;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.06em;
 }
 
 .weather-temp.loading {
@@ -1231,10 +1231,10 @@ body {
 }
 
 .sys-card-value {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   background: var(--accent-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1373,8 +1373,8 @@ body {
 .main-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 28px;
+  margin-bottom: 28px;
 }
 
 @media (min-width: 640px) {
@@ -1385,7 +1385,7 @@ body {
 
 /* ==================== NEWS ROW ==================== */
 .news-row {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .news-row .widget-news {
@@ -1396,8 +1396,8 @@ body {
 .tools-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 28px;
+  margin-bottom: 28px;
 }
 
 @media (min-width: 640px) {
@@ -1416,7 +1416,7 @@ body {
 .info-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 28px;
 }
 
 @media (min-width: 640px) {
@@ -2136,13 +2136,13 @@ body {
 }
 
 .timer-display {
-  font-size: 3.5rem;
+  font-size: 4rem;
   font-weight: 200;
   background: var(--accent-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.06em;
   font-variant-numeric: tabular-nums;
 }
 
