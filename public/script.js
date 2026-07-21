@@ -235,17 +235,33 @@ function animateParticles() {
 
 animateParticles();
 
-// ==================== LOCAL TIME ====================
-function updateLocalTime() {
+// ==================== HEADER CLOCK ====================
+const clockSelect = document.getElementById('clockSelect');
+const headerClockTime = document.getElementById('headerClockTime');
+const headerClockDate = document.getElementById('headerClockDate');
+
+function updateHeaderClock() {
+  const zone = clockSelect.value;
   const now = new Date();
-  document.getElementById('localTime').textContent = now.toLocaleTimeString('it-IT', {
+  const timeStr = now.toLocaleTimeString('it-IT', {
+    timeZone: zone,
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
   });
+  const dateStr = now.toLocaleDateString('it-IT', {
+    timeZone: zone,
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  });
+  headerClockTime.textContent = timeStr;
+  headerClockDate.textContent = dateStr;
 }
-updateLocalTime();
-setInterval(updateLocalTime, 1000);
+updateHeaderClock();
+setInterval(updateHeaderClock, 1000);
+
+clockSelect.addEventListener('change', updateHeaderClock);
 
 // ==================== FOOTER YEAR ====================
 document.getElementById('footerYear').textContent = new Date().getFullYear();
@@ -476,22 +492,21 @@ async function loadWeather() {
   }
 }
 
-// ==================== WIDGET: QUOTE ====================
-async function loadQuote() {
+
+// ==================== HEADER WEATHER ====================
+async function updateHeaderWeather() {
   try {
-    const data = await fetchAPI('/api/quote');
-    const textEl = document.getElementById('quoteText');
-    textEl.style.opacity = '0';
-    setTimeout(() => {
-      textEl.textContent = data.content;
-      textEl.style.opacity = '1';
-      document.getElementById('quoteAuthor').textContent = `— ${data.author}`;
-    }, 200);
+    const data = await fetchAPI('/api/weather');
+    if (!data.error) {
+      document.getElementById('headerWeatherTemp').textContent = `${data.temp}°`;
+      document.getElementById('headerWeatherIcon').textContent = data.desc.includes('nuvol') ? '☁️' : data.desc.includes('pioggia') ? '🌧️' : data.desc.includes('sole') ? '☀️' : '🌤️';
+    }
   } catch {
-    document.getElementById('quoteText').textContent = 'Carica una nuova citazione...';
-    document.getElementById('quoteAuthor').textContent = '';
+    // silently fail
   }
 }
+updateHeaderWeather();
+setInterval(updateHeaderWeather, 300000); // 5 min
 
 // ==================== WIDGET: CLOCK ====================
 async function loadClocks() {
@@ -701,15 +716,15 @@ observer.observe(document.documentElement, { attributes: true, attributeFilter: 
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
   loadWeather();
-  loadQuote();
-  loadClocks();
   loadSystem();
   loadTodos();
   loadNews();
+  updateHeaderWeather();
+  updateHeaderClock();
 
   setInterval(loadWeather, 60000);
   setInterval(loadSystem, 2000);
-  setInterval(loadQuote, 30000);
   setInterval(loadClocks, 10000);
   setInterval(loadNews, 120000); // Refresh news every 2 min
+  setInterval(updateHeaderWeather, 300000); // Refresh header weather every 5 min
 });

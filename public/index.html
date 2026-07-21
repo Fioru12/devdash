@@ -23,7 +23,24 @@
           <span class="header-date" id="headerDate">--</span>
         </div>
         <div class="header-right">
-          <span class="local-time" id="localTime">--:--:--</span>
+          <div class="header-clock" id="headerClock">
+            <select class="clock-select" id="clockSelect">
+              <option value="Europe/Rome">Roma</option>
+              <option value="America/New_York">New York</option>
+              <option value="Europe/London">Londra</option>
+              <option value="Asia/Tokyo">Tokyo</option>
+              <option value="Australia/Sydney">Sydney</option>
+              <option value="Europe/Moscow">Mosca</option>
+            </select>
+            <div class="clock-display">
+              <span class="clock-time" id="headerClockTime">--:--</span>
+              <span class="clock-date" id="headerClockDate">--</span>
+            </div>
+          </div>
+          <div class="header-weather" id="headerWeather">
+            <span class="weather-icon" id="headerWeatherIcon">🌤️</span>
+            <span class="weather-temp" id="headerWeatherTemp">--°</span>
+          </div>
           <button class="color-picker-btn" id="colorPickerBtn" aria-label="Scegli colore" title="Colore accent (C)">🎨</button>
           <button class="theme-toggle" id="themeToggle" aria-label="Cambia tema" title="Cambia tema (D)">
             <span class="icon-sun">☀️</span>
@@ -129,29 +146,6 @@
 
     <!-- BOTTOM ROW -->
     <div class="bottom-row">
-      <div class="widget widget-clock" id="widgetClock">
-        <div class="widget-header">
-          <span class="widget-icon">🕐</span>
-          <h2>Orologi</h2>
-          <button class="widget-refresh" data-widget="clock" aria-label="Aggiorna">↻</button>
-        </div>
-        <div class="widget-body" id="clockBody">
-          <div class="clock-list" id="clockList"></div>
-        </div>
-      </div>
-
-      <div class="widget widget-quote" id="widgetQuote">
-        <div class="widget-header">
-          <span class="widget-icon">💬</span>
-          <h2>Citazione</h2>
-          <button class="widget-refresh" data-widget="quote" aria-label="Aggiorna">↻</button>
-        </div>
-        <div class="widget-body quote-body" id="quoteBody">
-          <blockquote class="quote-text" id="quoteText">Caricamento...</blockquote>
-          <cite class="quote-author" id="quoteAuthor">—</cite>
-        </div>
-      </div>
-
       <div class="widget widget-todo" id="widgetTodo">
         <div class="widget-header">
           <span class="widget-icon">✅</span>
