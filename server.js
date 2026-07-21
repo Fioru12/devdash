@@ -461,7 +461,8 @@ app.get('/api/crypto', async (req, res) => {
     }).filter(Boolean);
 
     res.json(crypto);
-  } catch {
+  } catch (err) {
+    console.error('Errore API crypto:', err);
     res.json([]);
   }
 });
@@ -534,7 +535,7 @@ app.get('*', (req, res) => {
 
 // ==================== Start ====================
 app.listen(PORT, () => {
-  console.log(`✨ DevDash avviato!`);
+  console.log(`✨ DevDash avviato su porta ${PORT}`);
   console.log(`🌐 Apri http://localhost:${PORT} nel browser`);
 });
 
