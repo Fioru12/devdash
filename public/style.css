@@ -539,17 +539,17 @@ body {
 .weather-body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .weather-main {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: 20px;
 }
 
 .weather-temp {
-  font-size: 4.5rem;
+  font-size: 5rem;
   font-weight: 200;
   background: var(--accent-gradient);
   -webkit-background-clip: text;
@@ -557,7 +557,7 @@ body {
   background-clip: text;
   transition: all var(--transition);
   line-height: 1;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.05em;
 }
 
 .weather-temp.loading {
@@ -566,25 +566,24 @@ body {
 
 .weather-desc {
   color: var(--text-secondary);
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 500;
   text-transform: capitalize;
-  padding-top: 8px;
   letter-spacing: -0.01em;
 }
 
 .weather-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
 .weather-detail {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 12px 8px;
+  gap: 6px;
+  padding: 14px 10px;
   background: var(--bg-secondary);
   border-radius: var(--radius-sm);
   transition: all var(--transition);
@@ -592,15 +591,15 @@ body {
 
 .weather-detail:hover {
   background: rgba(var(--accent-rgb, 0, 113, 227), 0.05);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .detail-label {
   font-size: 0.7rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 500;
+  letter-spacing: 0.6px;
+  font-weight: 600;
 }
 
 .weather-city {
@@ -615,7 +614,7 @@ body {
 .forecast-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 10px;
   margin-top: 4px;
 }
 
@@ -623,8 +622,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 12px 8px;
+  gap: 8px;
+  padding: 14px 10px;
   background: var(--bg-secondary);
   border-radius: var(--radius-sm);
   transition: all var(--spring);
@@ -641,19 +640,19 @@ body {
   font-size: 0.7rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 500;
+  letter-spacing: 0.6px;
+  font-weight: 600;
 }
 
 .forecast-icon {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   line-height: 1;
 }
 
 .forecast-temps {
   display: flex;
-  gap: 8px;
-  font-size: 0.85rem;
+  gap: 10px;
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -714,13 +713,13 @@ body {
 .system-body {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .stat-row {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .stat-label {
@@ -732,7 +731,7 @@ body {
 
 .stat-bar-container {
   flex: 1;
-  height: 3px;
+  height: 4px;
   background: var(--bg-secondary);
   border-radius: 2px;
   overflow: hidden;
