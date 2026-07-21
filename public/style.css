@@ -472,6 +472,12 @@ body {
   background: var(--bg-card-hover);
 }
 
+.widget.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+  cursor: grabbing;
+}
+
 .widget:nth-child(2) { animation-delay: 0.05s; }
 .widget:nth-child(3) { animation-delay: 0.1s; }
 .widget:nth-child(4) { animation-delay: 0.15s; }

@@ -1066,8 +1066,129 @@ document.getElementById('timerReset').addEventListener('click', () => {
   updateTimerDisplay();
 });
 
+// ==================== DRAG & DROP ====================
+let draggedWidget = null;
+let draggedElement = null;
+
+function initDragAndDrop() {
+  const widgets = document.querySelectorAll('.widget');
+  
+  widgets.forEach(widget => {
+    widget.setAttribute('draggable', 'true');
+    
+    widget.addEventListener('dragstart', (e) => {
+      draggedWidget = widget;
+      widget.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', widget.id);
+    });
+    
+    widget.addEventListener('dragend', () => {
+      widget.classList.remove('dragging');
+      draggedWidget = null;
+      saveWidgetOrder();
+    });
+    
+    widget.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      
+      if (draggedWidget && draggedWidget !== widget) {
+        const rect = widget.getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        
+        if (e.clientY < midY) {
+          widget.style.borderTop = '3px solid var(--accent)';
+          widget.style.borderBottom = '';
+        } else {
+          widget.style.borderTop = '';
+          widget.style.borderBottom = '3px solid var(--accent)';
+        }
+      }
+    });
+    
+    widget.addEventListener('dragleave', () => {
+      widget.style.borderTop = '';
+      widget.style.borderBottom = '';
+    });
+    
+    widget.addEventListener('drop', (e) => {
+      e.preventDefault();
+      widget.style.borderTop = '';
+      widget.style.borderBottom = '';
+      
+      if (draggedWidget && draggedWidget !== widget) {
+        const rect = widget.getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        const insertBefore = e.clientY < midY;
+        
+        const parent = widget.parentNode;
+        const allWidgets = Array.from(parent.querySelectorAll('.widget'));
+        const draggedIndex = allWidgets.indexOf(draggedWidget);
+        const targetIndex = allWidgets.indexOf(widget);
+        
+        if (insertBefore) {
+          if (draggedIndex < targetIndex) {
+            parent.insertBefore(draggedWidget, widget);
+          } else {
+            parent.insertBefore(draggedWidget, widget);
+          }
+        } else {
+          if (draggedIndex < targetIndex) {
+            parent.insertBefore(draggedWidget, widget.nextSibling);
+          } else {
+            parent.insertBefore(draggedWidget, widget);
+          }
+        }
+      }
+    });
+  });
+}
+
+function saveWidgetOrder() {
+  const rows = document.querySelectorAll('.main-row, .news-row, .tools-row, .info-row');
+  const order = {};
+  
+  rows.forEach(row => {
+    const rowId = row.classList[0];
+    const widgets = Array.from(row.querySelectorAll('.widget')).map(w => w.id);
+    order[rowId] = widgets;
+  });
+  
+  localStorage.setItem('devdash-widget-order', JSON.stringify(order));
+}
+
+function loadWidgetOrder() {
+  const saved = localStorage.getItem('devdash-widget-order');
+  if (!saved) return;
+  
+  try {
+    const order = JSON.parse(saved);
+    
+    Object.entries(order).forEach(([rowId, widgetIds]) => {
+      const row = document.querySelector(`.${rowId}`);
+      if (!row) return;
+      
+      const widgets = Array.from(row.querySelectorAll('.widget'));
+      const widgetMap = new Map(widgets.map(w => [w.id, w]));
+      
+      widgetIds.forEach(id => {
+        const widget = widgetMap.get(id);
+        if (widget) {
+          row.appendChild(widget);
+        }
+      });
+    });
+  } catch {
+    // silently fail
+  }
+}
+
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
+  loadWidgetOrder();
+  initDragAndDrop();
+  
   loadWeather();
   loadSystem();
   loadTodos();
