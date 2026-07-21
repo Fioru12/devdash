@@ -59,12 +59,10 @@ app.get('/api/weather', async (req, res) => {
 // --- Notizie (HackerNews) ---
 app.get('/api/news', async (req, res) => {
   try {
-    // Get top 30 story IDs
     const idsRes = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
     const ids = await idsRes.json();
     const topIds = ids.slice(0, 15);
 
-    // Fetch details for each story
     const stories = await Promise.all(
       topIds.map(async (id) => {
         try {
@@ -241,17 +239,6 @@ app.get('/api/time', (req, res) => {
   });
 
   res.json(times);
-});
-
-// ==================== SPA fallback ====================
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// ==================== Start ====================
-app.listen(PORT, () => {
-  console.log(`✨ DevDash avviato!`);
-  console.log(`🌐 Apri http://localhost:${PORT} nel browser`);
 });
 
 // ==================== Storage ====================
@@ -538,6 +525,17 @@ app.get('/api/calendar', (req, res) => {
     days,
     today: now.getDate(),
   });
+});
+
+// ==================== SPA fallback (MUST BE LAST) ====================
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ==================== Start ====================
+app.listen(PORT, () => {
+  console.log(`✨ DevDash avviato!`);
+  console.log(`🌐 Apri http://localhost:${PORT} nel browser`);
 });
 
 // ==================== Utilities ====================
