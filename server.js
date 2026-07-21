@@ -254,6 +254,292 @@ app.listen(PORT, () => {
   console.log(`🌐 Apri http://localhost:${PORT} nel browser`);
 });
 
+// ==================== Storage ====================
+app.get('/api/storage', (req, res) => {
+  try {
+    const disks = fs.readdirSync('/dev').filter(f => f.startsWith('sd') || f.startsWith('nvme') || f.startsWith('disk'));
+    const storage = disks.map(disk => {
+      try {
+        const stats = fs.statSync(`/dev/${disk}`);
+        return {
+          device: disk,
+          size: formatBytes(stats.size),
+        };
+      } catch {
+        return null;
+      }
+    }).filter(Boolean);
+
+    // Get disk usage
+    const usage = [];
+    try {
+      const df = require('child_process').execSync('df -h').toString();
+      const lines = df.split('\n').slice(1);
+      lines.forEach(line => {
+        const parts = line.trim().split(/\s+/);
+        if (parts.length >= 6 && parts[0].includes('/dev/')) {
+          usage.push({
+            device: parts[0],
+            mount: parts[5],
+            total: parts[1],
+            used: parts[2],
+            free: parts[3],
+            percent: parts[4],
+          });
+        }
+      });
+    } catch {}
+
+    res.json({ disks: storage, usage });
+  } catch {
+    res.json({ disks: [], usage: [] });
+  }
+});
+
+// ==================== Network ====================
+app.get('/api/network', (req, res) => {
+  try {
+    const interfaces = os.networkInterfaces();
+    const netStats = Object.entries(interfaces).map(([name, addrs]) => {
+      const ipv4 = addrs.find(a => a.family === 'IPv4');
+      return {
+        name,
+        ip: ipv4 ? ipv4.address : 'N/A',
+        mac: addrs[0]?.mac || 'N/A',
+      };
+    });
+
+    // Get network stats
+    let rxBytes = 0, txBytes = 0;
+    try {
+      const stats = fs.readFileSync('/sys/class/net/statistics/rx_bytes', 'utf-8');
+      rxBytes = parseInt(stats.trim()) || 0;
+    } catch {}
+    try {
+      const stats = fs.readFileSync('/sys/class/net/statistics/tx_bytes', 'utf-8');
+      txBytes = parseInt(stats.trim()) || 0;
+    } catch {}
+
+    res.json({
+      interfaces: netStats,
+      rxBytes: formatBytes(rxBytes),
+      txBytes: formatBytes(txBytes),
+    });
+  } catch {
+    res.json({ interfaces: [], rxBytes: '0 B', txBytes: '0 B' });
+  }
+});
+
+// ==================== Services ====================
+app.get('/api/services', (req, res) => {
+  try {
+    const services = ['nginx', 'apache2', 'mysql', 'postgresql', 'redis', 'docker', 'ssh', 'cron'];
+    const status = services.map(svc => {
+      try {
+        const result = require('child_process').execSync(`systemctl is-active ${svc} 2>&1`).toString().trim();
+        return { name: svc, status: result === 'active' ? 'running' : 'stopped' };
+      } catch {
+        return { name: svc, status: 'not-found' };
+      }
+    });
+    res.json(status);
+  } catch {
+    res.json([]);
+  }
+});
+
+// ==================== Notes ====================
+const NOTES_FILE = path.join(__dirname, 'data', 'notes.json');
+
+function readNotes() {
+  try {
+    if (!fs.existsSync(NOTES_FILE)) return [];
+    const data = fs.readFileSync(NOTES_FILE, 'utf-8');
+    return JSON.parse(data);
+  } catch {
+    return [];
+  }
+}
+
+function writeNotes(notes) {
+  fs.writeFileSync(NOTES_FILE, JSON.stringify(notes, null, 2));
+}
+
+app.get('/api/notes', (req, res) => {
+  res.json(readNotes());
+});
+
+app.post('/api/notes', (req, res) => {
+  const { text } = req.body;
+  if (!text || typeof text !== 'string') {
+    return res.status(400).json({ error: 'Testo richiesto' });
+  }
+
+  const notes = readNotes();
+  const note = {
+    id: Date.now().toString(),
+    text: text.trim(),
+    createdAt: new Date().toISOString(),
+  };
+  notes.unshift(note);
+  writeNotes(notes);
+  res.status(201).json(note);
+});
+
+app.delete('/api/notes/:id', (req, res) => {
+  let notes = readNotes();
+  const before = notes.length;
+  notes = notes.filter(n => n.id !== req.params.id);
+  if (notes.length === before) {
+    return res.status(404).json({ error: 'Nota non trovata' });
+  }
+  writeNotes(notes);
+  res.json({ ok: true });
+});
+
+// ==================== Bookmarks ====================
+const BOOKMARKS_FILE = path.join(__dirname, 'data', 'bookmarks.json');
+
+function readBookmarks() {
+  try {
+    if (!fs.existsSync(BOOKMARKS_FILE)) return [];
+    const data = fs.readFileSync(BOOKMARKS_FILE, 'utf-8');
+    return JSON.parse(data);
+  } catch {
+    return [];
+  }
+}
+
+function writeBookmarks(bookmarks) {
+  fs.writeFileSync(BOOKMARKS_FILE, JSON.stringify(bookmarks, null, 2));
+}
+
+app.get('/api/bookmarks', (req, res) => {
+  res.json(readBookmarks());
+});
+
+app.post('/api/bookmarks', (req, res) => {
+  const { name, url } = req.body;
+  if (!name || !url) {
+    return res.status(400).json({ error: 'Nome e URL richiesti' });
+  }
+
+  const bookmarks = readBookmarks();
+  const bookmark = {
+    id: Date.now().toString(),
+    name: name.trim(),
+    url: url.trim(),
+    createdAt: new Date().toISOString(),
+  };
+  bookmarks.push(bookmark);
+  writeBookmarks(bookmarks);
+  res.status(201).json(bookmark);
+});
+
+app.delete('/api/bookmarks/:id', (req, res) => {
+  let bookmarks = readBookmarks();
+  const before = bookmarks.length;
+  bookmarks = bookmarks.filter(b => b.id !== req.params.id);
+  if (bookmarks.length === before) {
+    return res.status(404).json({ error: 'Bookmark non trovato' });
+  }
+  writeBookmarks(bookmarks);
+  res.json({ ok: true });
+});
+
+// ==================== Timer/Pomodoro ====================
+app.get('/api/timer', (req, res) => {
+  res.json({ mode: 'pomodoro', duration: 25 * 60 });
+});
+
+// ==================== Crypto ====================
+app.get('/api/crypto', async (req, res) => {
+  try {
+    const coins = ['bitcoin', 'ethereum', 'solana'];
+    const promises = coins.map(coin =>
+      fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=usd&include_24hr_change=true`)
+        .then(r => r.json())
+        .catch(() => null)
+    );
+
+    const results = await Promise.all(promises);
+    const crypto = coins.map((coin, i) => {
+      const data = results[i];
+      if (!data || !data[coin]) return null;
+      return {
+        name: coin.charAt(0).toUpperCase() + coin.slice(1),
+        price: data[coin].usd,
+        change: data[coin].usd_24h_change || 0,
+      };
+    }).filter(Boolean);
+
+    res.json(crypto);
+  } catch {
+    res.json([]);
+  }
+});
+
+// ==================== GitHub ====================
+app.get('/api/github', async (req, res) => {
+  try {
+    const username = req.query.username || 'Fioru12';
+    const response = await fetch(`https://api.github.com/users/${username}`);
+    const data = await response.json();
+
+    const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=5`);
+    const repos = await reposResponse.json();
+
+    res.json({
+      user: {
+        login: data.login,
+        name: data.name,
+        avatar: data.avatar_url,
+        repos: data.public_repos,
+        followers: data.followers,
+        following: data.following,
+      },
+      repos: repos.map(r => ({
+        name: r.name,
+        description: r.description,
+        stars: r.stargazers_count,
+        forks: r.forks_count,
+        language: r.language,
+        updated: r.updated_at,
+      })),
+    });
+  } catch {
+    res.json({ user: null, repos: [] });
+  }
+});
+
+// ==================== Calendar ====================
+app.get('/api/calendar', (req, res) => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const daysInMonth = lastDay.getDate();
+  const startingDay = firstDay.getDay();
+
+  const days = [];
+  for (let i = 1; i <= daysInMonth; i++) {
+    days.push({
+      day: i,
+      month: month + 1,
+      year,
+      weekday: new Date(year, month, i).getDay(),
+    });
+  }
+
+  res.json({
+    month: month + 1,
+    year,
+    days,
+    today: now.getDate(),
+  });
+});
+
 // ==================== Utilities ====================
 function formatBytes(bytes) {
   const sizes = ['B', 'KB', 'MB', 'GB'];

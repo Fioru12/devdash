@@ -160,18 +160,117 @@
         </div>
       </div>
 
-      <div class="widget widget-links" id="widgetLinks">
+      <div class="widget widget-notes" id="widgetNotes">
         <div class="widget-header">
-          <span class="widget-icon">🔗</span>
-          <h2>Link Rapidi</h2>
+          <span class="widget-icon">📝</span>
+          <h2>Note</h2>
         </div>
-        <div class="widget-body links-body" id="linksBody">
-          <a href="https://github.com" target="_blank" class="link-card"><span>🐙</span> GitHub</a>
-          <a href="https://news.ycombinator.com" target="_blank" class="link-card"><span>🔶</span> Hacker News</a>
-          <a href="https://developer.mozilla.org" target="_blank" class="link-card"><span>📖</span> MDN</a>
-          <a href="https://chatgpt.com" target="_blank" class="link-card"><span>🤖</span> ChatGPT</a>
-          <a href="https://www.google.com" target="_blank" class="link-card"><span>🔍</span> Google</a>
-          <a href="https://stackoverflow.com" target="_blank" class="link-card"><span>📚</span> Stack Overflow</a>
+        <div class="widget-body notes-body" id="notesBody">
+          <form class="notes-form" id="notesForm">
+            <input type="text" class="notes-input" id="notesInput" placeholder="Scrivi una nota..." autocomplete="off" />
+            <button type="submit" class="notes-submit">+</button>
+          </form>
+          <ul class="notes-list" id="notesList"></ul>
+        </div>
+      </div>
+
+      <div class="widget widget-bookmarks" id="widgetBookmarks">
+        <div class="widget-header">
+          <span class="widget-icon">🔖</span>
+          <h2>Bookmarks</h2>
+        </div>
+        <div class="widget-body bookmarks-body" id="bookmarksBody">
+          <form class="bookmarks-form" id="bookmarksForm">
+            <input type="text" class="bookmarks-input" id="bookmarkName" placeholder="Nome..." autocomplete="off" />
+            <input type="text" class="bookmarks-input" id="bookmarkUrl" placeholder="URL..." autocomplete="off" />
+            <button type="submit" class="bookmarks-submit">+</button>
+          </form>
+          <ul class="bookmarks-list" id="bookmarksList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXTRA WIDGETS ROW -->
+    <div class="extra-row">
+      <div class="widget widget-calendar" id="widgetCalendar">
+        <div class="widget-header">
+          <span class="widget-icon">📅</span>
+          <h2>Calendario</h2>
+        </div>
+        <div class="widget-body calendar-body" id="calendarBody">
+          <div class="calendar-header" id="calendarHeader"></div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+      </div>
+
+      <div class="widget widget-network" id="widgetNetwork">
+        <div class="widget-header">
+          <span class="widget-icon">🌐</span>
+          <h2>Rete</h2>
+          <button class="widget-refresh" data-widget="network" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body network-body" id="networkBody">
+          <div class="network-info" id="networkInfo"></div>
+        </div>
+      </div>
+
+      <div class="widget widget-storage" id="widgetStorage">
+        <div class="widget-header">
+          <span class="widget-icon">💾</span>
+          <h2>Storage</h2>
+          <button class="widget-refresh" data-widget="storage" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body storage-body" id="storageBody">
+          <div class="storage-info" id="storageInfo"></div>
+        </div>
+      </div>
+
+      <div class="widget widget-services" id="widgetServices">
+        <div class="widget-header">
+          <span class="widget-icon">⚙️</span>
+          <h2>Servizi</h2>
+          <button class="widget-refresh" data-widget="services" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body services-body" id="servicesBody">
+          <div class="services-list" id="servicesList"></div>
+        </div>
+      </div>
+
+      <div class="widget widget-github" id="widgetGithub">
+        <div class="widget-header">
+          <span class="widget-icon">🐙</span>
+          <h2>GitHub</h2>
+          <button class="widget-refresh" data-widget="github" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body github-body" id="githubBody">
+          <div class="github-user" id="githubUser"></div>
+          <div class="github-repos" id="githubRepos"></div>
+        </div>
+      </div>
+
+      <div class="widget widget-crypto" id="widgetCrypto">
+        <div class="widget-header">
+          <span class="widget-icon">₿</span>
+          <h2>Crypto</h2>
+          <button class="widget-refresh" data-widget="crypto" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body crypto-body" id="cryptoBody">
+          <div class="crypto-list" id="cryptoList"></div>
+        </div>
+      </div>
+
+      <div class="widget widget-timer" id="widgetTimer">
+        <div class="widget-header">
+          <span class="widget-icon">⏱️</span>
+          <h2>Timer Pomodoro</h2>
+        </div>
+        <div class="widget-body timer-body" id="timerBody">
+          <div class="timer-display" id="timerDisplay">25:00</div>
+          <div class="timer-controls">
+            <button class="timer-btn" id="timerStart">▶️</button>
+            <button class="timer-btn" id="timerPause">⏸️</button>
+            <button class="timer-btn" id="timerReset">🔄</button>
+          </div>
         </div>
       </div>
     </div>
