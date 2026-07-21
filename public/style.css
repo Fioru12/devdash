@@ -1369,55 +1369,70 @@ body {
   border-radius: var(--radius-sm);
 }
 
-/* ==================== BREAKING ROW ==================== */
-.breaking-row {
+/* ==================== MAIN ROW ==================== */
+.main-row {
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
-  margin-bottom: 0;
+  margin-bottom: 24px;
 }
 
 @media (min-width: 640px) {
-  .breaking-row {
+  .main-row {
     grid-template-columns: 1fr 1fr;
   }
 }
 
-/* ==================== BOTTOM ROW ==================== */
-.bottom-row {
+/* ==================== NEWS ROW ==================== */
+.news-row {
+  margin-bottom: 24px;
+}
+
+.news-row .widget-news {
+  grid-column: 1 / -1;
+}
+
+/* ==================== TOOLS ROW ==================== */
+.tools-row {
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
+  margin-bottom: 24px;
 }
 
 @media (min-width: 640px) {
-  .bottom-row {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (min-width: 1024px) {
-  .bottom-row {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-}
-
-/* ==================== EXTRA ROW ==================== */
-.extra-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  margin-top: 24px;
-}
-
-@media (min-width: 640px) {
-  .extra-row {
+  .tools-row {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (min-width: 1024px) {
-  .extra-row {
+  .tools-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ==================== INFO ROW ==================== */
+.info-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 640px) {
+  .info-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .info-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .info-row {
     grid-template-columns: repeat(4, 1fr);
   }
 }

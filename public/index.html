@@ -74,8 +74,8 @@
       </div>
     </header>
 
-    <!-- TOP ROW: Meteo + Sistema -->
-    <div class="breaking-row">
+    <!-- MAIN ROW: Meteo + Sistema -->
+    <div class="main-row">
       <div class="widget widget-weather" id="widgetWeather">
         <div class="widget-header">
           <span class="widget-icon">🌤️</span>
@@ -128,24 +128,26 @@
       </div>
     </div>
 
-    <!-- MIDDLE: Notizie -->
-    <div class="widget widget-news" id="widgetNews">
-      <div class="widget-header">
-        <span class="widget-icon">📰</span>
-        <h2>Ultime notizie tech</h2>
-        <button class="widget-refresh" data-widget="news" aria-label="Aggiorna">↻</button>
-      </div>
-      <div class="widget-body news-body" id="newsBody">
-        <div class="news-list" id="newsList">
-          <div class="news-skeleton"></div>
-          <div class="news-skeleton"></div>
-          <div class="news-skeleton"></div>
+    <!-- NEWS ROW -->
+    <div class="news-row">
+      <div class="widget widget-news" id="widgetNews">
+        <div class="widget-header">
+          <span class="widget-icon">📰</span>
+          <h2>Ultime notizie tech</h2>
+          <button class="widget-refresh" data-widget="news" aria-label="Aggiorna">↻</button>
+        </div>
+        <div class="widget-body news-body" id="newsBody">
+          <div class="news-list" id="newsList">
+            <div class="news-skeleton"></div>
+            <div class="news-skeleton"></div>
+            <div class="news-skeleton"></div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- BOTTOM ROW -->
-    <div class="bottom-row">
+    <!-- TOOLS ROW -->
+    <div class="tools-row">
       <div class="widget widget-todo" id="widgetTodo">
         <div class="widget-header">
           <span class="widget-icon">✅</span>
@@ -188,10 +190,25 @@
           <ul class="bookmarks-list" id="bookmarksList"></ul>
         </div>
       </div>
+
+      <div class="widget widget-timer" id="widgetTimer">
+        <div class="widget-header">
+          <span class="widget-icon">⏱️</span>
+          <h2>Timer Pomodoro</h2>
+        </div>
+        <div class="widget-body timer-body" id="timerBody">
+          <div class="timer-display" id="timerDisplay">25:00</div>
+          <div class="timer-controls">
+            <button class="timer-btn" id="timerStart">▶️</button>
+            <button class="timer-btn" id="timerPause">⏸️</button>
+            <button class="timer-btn" id="timerReset">🔄</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- EXTRA WIDGETS ROW -->
-    <div class="extra-row">
+    <!-- INFO ROW -->
+    <div class="info-row">
       <div class="widget widget-calendar" id="widgetCalendar">
         <div class="widget-header">
           <span class="widget-icon">📅</span>
@@ -256,21 +273,6 @@
         </div>
         <div class="widget-body crypto-body" id="cryptoBody">
           <div class="crypto-list" id="cryptoList"></div>
-        </div>
-      </div>
-
-      <div class="widget widget-timer" id="widgetTimer">
-        <div class="widget-header">
-          <span class="widget-icon">⏱️</span>
-          <h2>Timer Pomodoro</h2>
-        </div>
-        <div class="widget-body timer-body" id="timerBody">
-          <div class="timer-display" id="timerDisplay">25:00</div>
-          <div class="timer-controls">
-            <button class="timer-btn" id="timerStart">▶️</button>
-            <button class="timer-btn" id="timerPause">⏸️</button>
-            <button class="timer-btn" id="timerReset">🔄</button>
-          </div>
         </div>
       </div>
     </div>
