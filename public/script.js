@@ -638,9 +638,13 @@ document.querySelectorAll('.widget-refresh').forEach(btn => {
 
     switch (widget) {
       case 'weather': loadWeather(); break;
-      case 'quote': loadQuote(); break;
       case 'clock': loadClocks(); break;
       case 'system': loadSystem(); break;
+      case 'network': loadNetwork(); break;
+      case 'storage': loadStorage(); break;
+      case 'services': loadServices(); break;
+      case 'github': loadGitHub(); break;
+      case 'crypto': loadCrypto(); break;
     }
   });
 });
@@ -673,9 +677,16 @@ document.addEventListener('keydown', (e) => {
     case 'r':
       e.preventDefault();
       loadWeather();
-      loadQuote();
       loadClocks();
       loadSystem();
+      loadNotes();
+      loadBookmarks();
+      loadCalendar();
+      loadNetwork();
+      loadStorage();
+      loadServices();
+      loadGitHub();
+      loadCrypto();
       playSound('refresh');
       break;
     case 'd':
@@ -713,18 +724,376 @@ const observer = new MutationObserver(() => {
 });
 observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
+// ==================== WIDGET: NOTES ====================
+async function loadNotes() {
+  try {
+    const notes = await fetchAPI('/api/notes');
+    const list = document.getElementById('notesList');
+    if (notes.length === 0) {
+      list.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 16px; font-size: 0.85rem; font-weight: 500;">Nessuna nota. Aggiungine una! ✨</div>';
+      return;
+    }
+    list.innerHTML = notes.map(n => `
+      <li class="note-item" data-id="${n.id}">
+        <span class="note-text">${escapeHtml(n.text)}</span>
+        <button class="note-delete" aria-label="Elimina">✕</button>
+      </li>
+    `).join('');
+
+    list.querySelectorAll('.note-delete').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const li = e.target.closest('.note-item');
+        li.classList.add('removing');
+        playSound('delete');
+        const id = li.dataset.id;
+        setTimeout(async () => {
+          await fetch(`/api/notes/${id}`, { method: 'DELETE' });
+          loadNotes();
+        }, 300);
+      });
+    });
+  } catch {
+    // silently fail
+  }
+}
+
+document.getElementById('notesForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = document.getElementById('notesInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  try {
+    await fetch('/api/notes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    input.value = '';
+    playSound('todo');
+    loadNotes();
+  } catch {
+    // silently fail
+  }
+});
+
+// ==================== WIDGET: BOOKMARKS ====================
+async function loadBookmarks() {
+  try {
+    const bookmarks = await fetchAPI('/api/bookmarks');
+    const list = document.getElementById('bookmarksList');
+    if (bookmarks.length === 0) {
+      list.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 16px; font-size: 0.85rem; font-weight: 500;">Nessun bookmark. Aggiungine uno! 🔖</div>';
+      return;
+    }
+    list.innerHTML = bookmarks.map(b => `
+      <li class="bookmark-item" data-id="${b.id}">
+        <a href="${b.url}" target="_blank" class="bookmark-link">${escapeHtml(b.name)}</a>
+        <button class="bookmark-delete" aria-label="Elimina">✕</button>
+      </li>
+    `).join('');
+
+    list.querySelectorAll('.bookmark-delete').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const li = e.target.closest('.bookmark-item');
+        li.classList.add('removing');
+        playSound('delete');
+        const id = li.dataset.id;
+        setTimeout(async () => {
+          await fetch(`/api/bookmarks/${id}`, { method: 'DELETE' });
+          loadBookmarks();
+        }, 300);
+      });
+    });
+  } catch {
+    // silently fail
+  }
+}
+
+document.getElementById('bookmarksForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const nameInput = document.getElementById('bookmarkName');
+  const urlInput = document.getElementById('bookmarkUrl');
+  const name = nameInput.value.trim();
+  const url = urlInput.value.trim();
+  if (!name || !url) return;
+
+  try {
+    await fetch('/api/bookmarks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, url }),
+    });
+    nameInput.value = '';
+    urlInput.value = '';
+    playSound('todo');
+    loadBookmarks();
+  } catch {
+    // silently fail
+  }
+});
+
+// ==================== WIDGET: CALENDAR ====================
+async function loadCalendar() {
+  try {
+    const data = await fetchAPI('/api/calendar');
+    const header = document.getElementById('calendarHeader');
+    const grid = document.getElementById('calendarGrid');
+    
+    const monthNames = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+    header.textContent = `${monthNames[data.month - 1]} ${data.year}`;
+
+    const dayNames = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+    let html = dayNames.map(d => `<div class="calendar-day-header">${d}</div>`).join('');
+
+    const firstDay = new Date(data.year, data.month - 1, 1).getDay();
+    const offset = firstDay === 0 ? 6 : firstDay - 1;
+
+    for (let i = 0; i < offset; i++) {
+      html += '<div class="calendar-day other-month"></div>';
+    }
+
+    data.days.forEach(day => {
+      const isToday = day.day === data.today;
+      html += `<div class="calendar-day ${isToday ? 'today' : ''}">${day.day}</div>`;
+    });
+
+    grid.innerHTML = html;
+  } catch {
+    document.getElementById('calendarGrid').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Errore caricamento calendario</div>';
+  }
+}
+
+// ==================== WIDGET: NETWORK ====================
+async function loadNetwork() {
+  try {
+    const data = await fetchAPI('/api/network');
+    const info = document.getElementById('networkInfo');
+    
+    let html = '';
+    data.interfaces.forEach(iface => {
+      html += `
+        <div class="network-item">
+          <span class="network-label">${iface.name}</span>
+          <span class="network-value">${iface.ip}</span>
+        </div>
+      `;
+    });
+
+    html += `
+      <div class="network-item">
+        <span class="network-label">RX</span>
+        <span class="network-value">${data.rxBytes}</span>
+      </div>
+      <div class="network-item">
+        <span class="network-label">TX</span>
+        <span class="network-value">${data.txBytes}</span>
+      </div>
+    `;
+
+    info.innerHTML = html;
+  } catch {
+    document.getElementById('networkInfo').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Errore caricamento rete</div>';
+  }
+}
+
+// ==================== WIDGET: STORAGE ====================
+async function loadStorage() {
+  try {
+    const data = await fetchAPI('/api/storage');
+    const info = document.getElementById('storageInfo');
+    
+    if (data.usage.length === 0) {
+      info.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Nessun dispositivo di storage</div>';
+      return;
+    }
+
+    info.innerHTML = data.usage.map(disk => {
+      const percent = parseInt(disk.percent) || 0;
+      return `
+        <div class="storage-item">
+          <div class="storage-header">
+            <span class="storage-device">${disk.device}</span>
+            <span class="storage-percent">${disk.percent}</span>
+          </div>
+          <div class="storage-bar">
+            <div class="storage-bar-fill" style="width: ${percent}%"></div>
+          </div>
+          <div class="storage-details">
+            <span>Usato: ${disk.used}</span>
+            <span>Libero: ${disk.free}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch {
+    document.getElementById('storageInfo').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Errore caricamento storage</div>';
+  }
+}
+
+// ==================== WIDGET: SERVICES ====================
+async function loadServices() {
+  try {
+    const services = await fetchAPI('/api/services');
+    const list = document.getElementById('servicesList');
+    
+    if (services.length === 0) {
+      list.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Nessun servizio</div>';
+      return;
+    }
+
+    list.innerHTML = services.map(svc => `
+      <div class="service-item">
+        <span class="service-name">${svc.name}</span>
+        <span class="service-status ${svc.status}">
+          <span class="service-dot"></span>
+          ${svc.status === 'running' ? 'Attivo' : svc.status === 'stopped' ? 'Fermo' : 'Non trovato'}
+        </span>
+      </div>
+    `).join('');
+  } catch {
+    document.getElementById('servicesList').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Errore caricamento servizi</div>';
+  }
+}
+
+// ==================== WIDGET: GITHUB ====================
+async function loadGitHub() {
+  try {
+    const data = await fetchAPI('/api/github');
+    const userEl = document.getElementById('githubUser');
+    const reposEl = document.getElementById('githubRepos');
+
+    if (!data.user) {
+      userEl.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Errore caricamento GitHub</div>';
+      return;
+    }
+
+    userEl.innerHTML = `
+      <img src="${data.user.avatar}" alt="Avatar" class="github-avatar" />
+      <div class="github-info">
+        <div class="github-name">${data.user.name || data.user.login}</div>
+        <div class="github-stats">
+          <span>📦 ${data.user.repos}</span>
+          <span>👥 ${data.user.followers}</span>
+          <span>👤 ${data.user.following}</span>
+        </div>
+      </div>
+    `;
+
+    if (data.repos.length === 0) {
+      reposEl.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 12px; font-size: 0.85rem;">Nessun repository</div>';
+      return;
+    }
+
+    reposEl.innerHTML = data.repos.map(repo => `
+      <a href="https://github.com/${data.user.login}/${repo.name}" target="_blank" class="github-repo">
+        <div class="repo-name">${repo.name}</div>
+        <div class="repo-desc">${repo.description || 'Nessuna descrizione'}</div>
+        <div class="repo-meta">
+          <span>⭐ ${repo.stars}</span>
+          <span>🍴 ${repo.forks}</span>
+          <span>💻 ${repo.language || 'N/A'}</span>
+        </div>
+      </a>
+    `).join('');
+  } catch {
+    document.getElementById('githubUser').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Errore caricamento GitHub</div>';
+  }
+}
+
+// ==================== WIDGET: CRYPTO ====================
+async function loadCrypto() {
+  try {
+    const cryptos = await fetchAPI('/api/crypto');
+    const list = document.getElementById('cryptoList');
+    
+    if (cryptos.length === 0) {
+      list.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Nessun dato crypto</div>';
+      return;
+    }
+
+    list.innerHTML = cryptos.map(crypto => {
+      const changeClass = crypto.change >= 0 ? 'positive' : 'negative';
+      const changeSymbol = crypto.change >= 0 ? '▲' : '▼';
+      return `
+        <div class="crypto-item">
+          <span class="crypto-name">${crypto.name}</span>
+          <span class="crypto-price">$${crypto.price.toLocaleString()}</span>
+          <span class="crypto-change ${changeClass}">${changeSymbol} ${Math.abs(crypto.change).toFixed(2)}%</span>
+        </div>
+      `;
+    }).join('');
+  } catch {
+    document.getElementById('cryptoList').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 20px;">Errore caricamento crypto</div>';
+  }
+}
+
+// ==================== WIDGET: TIMER ====================
+let timerInterval = null;
+let timerSeconds = 25 * 60;
+let timerRunning = false;
+
+function updateTimerDisplay() {
+  const mins = Math.floor(timerSeconds / 60);
+  const secs = timerSeconds % 60;
+  document.getElementById('timerDisplay').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+document.getElementById('timerStart').addEventListener('click', () => {
+  if (timerRunning) return;
+  timerRunning = true;
+  timerInterval = setInterval(() => {
+    if (timerSeconds > 0) {
+      timerSeconds--;
+      updateTimerDisplay();
+    } else {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      playSound('todo');
+    }
+  }, 1000);
+});
+
+document.getElementById('timerPause').addEventListener('click', () => {
+  clearInterval(timerInterval);
+  timerRunning = false;
+});
+
+document.getElementById('timerReset').addEventListener('click', () => {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerSeconds = 25 * 60;
+  updateTimerDisplay();
+});
+
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
   loadWeather();
   loadSystem();
   loadTodos();
+  loadNotes();
+  loadBookmarks();
   loadNews();
+  loadCalendar();
+  loadNetwork();
+  loadStorage();
+  loadServices();
+  loadGitHub();
+  loadCrypto();
   updateHeaderWeather();
   updateHeaderClock();
 
   setInterval(loadWeather, 60000);
   setInterval(loadSystem, 2000);
   setInterval(loadClocks, 10000);
-  setInterval(loadNews, 120000); // Refresh news every 2 min
-  setInterval(updateHeaderWeather, 300000); // Refresh header weather every 5 min
+  setInterval(loadNews, 120000);
+  setInterval(loadNotes, 30000);
+  setInterval(loadBookmarks, 30000);
+  setInterval(loadCalendar, 60000);
+  setInterval(loadNetwork, 5000);
+  setInterval(loadStorage, 30000);
+  setInterval(loadServices, 10000);
+  setInterval(loadGitHub, 300000);
+  setInterval(loadCrypto, 60000);
+  setInterval(updateHeaderWeather, 300000);
 });
