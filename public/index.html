@@ -12,45 +12,45 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <canvas id="particleCanvas"></canvas>
+  <canvas id="particleCanvas" aria-hidden="true"></canvas>
 
   <!-- Landing Page -->
-  <div class="landing-overlay" id="landingOverlay">
+  <div class="landing-overlay" id="landingOverlay" role="dialog" aria-modal="true" aria-labelledby="landingTitle">
     <div class="landing-content">
       <div class="landing-logo">⎔ DevDash</div>
-      <h1 class="landing-title">Dashboard Personale<br/>per Developers & SysAdmin</h1>
+      <h1 class="landing-title" id="landingTitle">Dashboard Personale<br/>per Developers & SysAdmin</h1>
       <p class="landing-subtitle">Monitora sistema, news, crypto e molto altro in un'interfaccia moderna e reattiva</p>
       
       <div class="landing-features">
         <div class="landing-feature">
-          <span class="feature-icon">🌤️</span>
+          <span class="feature-icon" aria-hidden="true">🌤️</span>
           <span class="feature-text">Meteo Live</span>
         </div>
         <div class="landing-feature">
-          <span class="feature-icon">💻</span>
+          <span class="feature-icon" aria-hidden="true">💻</span>
           <span class="feature-text">Monitor Sistema</span>
         </div>
         <div class="landing-feature">
-          <span class="feature-icon">📰</span>
+          <span class="feature-icon" aria-hidden="true">📰</span>
           <span class="feature-text">News Tech</span>
         </div>
         <div class="landing-feature">
-          <span class="feature-icon">₿</span>
+          <span class="feature-icon" aria-hidden="true">₿</span>
           <span class="feature-text">Crypto Tracker</span>
         </div>
         <div class="landing-feature">
-          <span class="feature-icon">✅</span>
+          <span class="feature-icon" aria-hidden="true">✅</span>
           <span class="feature-text">Todo & Note</span>
         </div>
         <div class="landing-feature">
-          <span class="feature-icon">🐙</span>
+          <span class="feature-icon" aria-hidden="true">🐙</span>
           <span class="feature-text">GitHub Integration</span>
         </div>
       </div>
 
-      <button class="landing-btn" id="landingBtn">
+      <button class="landing-btn" id="landingBtn" aria-label="Entra nella dashboard">
         <span>Entra nella Dashboard</span>
-        <span class="btn-arrow">→</span>
+        <span class="btn-arrow" aria-hidden="true">→</span>
       </button>
 
       <p class="landing-hint">Premi <kbd>Invio</kbd> per entrare</p>
@@ -59,7 +59,7 @@
 
   <div class="container">
     <!-- HEADER -->
-    <header class="header">
+    <header class="header" role="banner">
       <div class="header-top">
         <div class="header-brand">
           <h1 class="logo">⎔ DevDash</h1>
@@ -67,7 +67,8 @@
         </div>
         <div class="header-right">
           <div class="header-clock" id="headerClock">
-            <select class="clock-select" id="clockSelect">
+            <label for="clockSelect" class="sr-only">Seleziona fuso orario</label>
+            <select class="clock-select" id="clockSelect" aria-label="Seleziona fuso orario">
               <option value="Europe/Rome">Roma</option>
               <option value="America/New_York">New York</option>
               <option value="Europe/London">Londra</option>
@@ -76,36 +77,36 @@
               <option value="Europe/Moscow">Mosca</option>
             </select>
             <div class="clock-display">
-              <span class="clock-time" id="headerClockTime">--:--</span>
+              <span class="clock-time" id="headerClockTime" aria-live="polite">--:--</span>
               <span class="clock-date" id="headerClockDate">--</span>
             </div>
           </div>
-          <div class="header-weather" id="headerWeather">
-            <span class="weather-icon" id="headerWeatherIcon">🌤️</span>
+          <div class="header-weather" id="headerWeather" aria-label="Meteo corrente">
+            <span class="weather-icon" id="headerWeatherIcon" aria-hidden="true">🌤️</span>
             <span class="weather-temp" id="headerWeatherTemp">--°</span>
           </div>
-          <button class="color-picker-btn" id="colorPickerBtn" aria-label="Scegli colore" title="Colore accent (C)">🎨</button>
-          <button class="theme-toggle" id="themeToggle" aria-label="Cambia tema" title="Cambia tema (D)">
-            <span class="icon-sun">☀️</span>
-            <span class="icon-moon">🌙</span>
+          <button class="color-picker-btn" id="colorPickerBtn" aria-label="Scegli colore" title="Colore accent (C)" aria-haspopup="true" aria-expanded="false">🎨</button>
+          <button class="theme-toggle" id="themeToggle" aria-label="Cambia tema chiaro o scuro" title="Cambia tema (D)">
+            <span class="icon-sun" aria-hidden="true">☀️</span>
+            <span class="icon-moon" aria-hidden="true">🌙</span>
           </button>
         </div>
       </div>
       <!-- Color picker -->
-      <div class="color-popup" id="colorPopup">
+      <div class="color-popup" id="colorPopup" role="dialog" aria-label="Selettore colore accent" aria-hidden="true">
         <div class="color-popup-header">
           <span>Colore accent</span>
-          <button class="color-popup-close" id="colorPopupClose">✕</button>
+          <button class="color-popup-close" id="colorPopupClose" aria-label="Chiudi selettore colore">✕</button>
         </div>
-        <div class="color-options" id="colorOptions">
-          <button class="color-opt active" data-color="#0071e3" style="background:#0071e3"></button>
-          <button class="color-opt" data-color="#6c63ff" style="background:#6c63ff"></button>
-          <button class="color-opt" data-color="#3b82f6" style="background:#3b82f6"></button>
-          <button class="color-opt" data-color="#06b6d4" style="background:#06b6d4"></button>
-          <button class="color-opt" data-color="#10b981" style="background:#10b981"></button>
-          <button class="color-opt" data-color="#f59e0b" style="background:#f59e0b"></button>
-          <button class="color-opt" data-color="#ef4444" style="background:#ef4444"></button>
-          <button class="color-opt" data-color="#ec4899" style="background:#ec4899"></button>
+        <div class="color-options" id="colorOptions" role="radiogroup" aria-label="Colori disponibili">
+          <button class="color-opt active" data-color="#0071e3" style="background:#0071e3" aria-label="Blu" role="radio" aria-checked="true"></button>
+          <button class="color-opt" data-color="#6c63ff" style="background:#6c63ff" aria-label="Viola" role="radio" aria-checked="false"></button>
+          <button class="color-opt" data-color="#3b82f6" style="background:#3b82f6" aria-label="Blu chiaro" role="radio" aria-checked="false"></button>
+          <button class="color-opt" data-color="#06b6d4" style="background:#06b6d4" aria-label="Ciano" role="radio" aria-checked="false"></button>
+          <button class="color-opt" data-color="#10b981" style="background:#10b981" aria-label="Verde" role="radio" aria-checked="false"></button>
+          <button class="color-opt" data-color="#f59e0b" style="background:#f59e0b" aria-label="Arancione" role="radio" aria-checked="false"></button>
+          <button class="color-opt" data-color="#ef4444" style="background:#ef4444" aria-label="Rosso" role="radio" aria-checked="false"></button>
+          <button class="color-opt" data-color="#ec4899" style="background:#ec4899" aria-label="Rosa" role="radio" aria-checked="false"></button>
         </div>
       </div>
       <!-- News Ticker -->
@@ -119,11 +120,11 @@
 
     <!-- MAIN ROW: Meteo + Sistema -->
     <div class="main-row">
-      <div class="widget widget-weather" id="widgetWeather">
+      <div class="widget widget-weather" id="widgetWeather" role="region" aria-labelledby="weatherTitle">
         <div class="widget-header">
-          <span class="widget-icon">🌤️</span>
-          <h2>Meteo</h2>
-          <button class="widget-refresh" data-widget="weather" aria-label="Aggiorna">↻</button>
+          <span class="widget-icon" aria-hidden="true">🌤️</span>
+          <h2 id="weatherTitle">Meteo</h2>
+          <button class="widget-refresh" data-widget="weather" aria-label="Aggiorna meteo">↻</button>
         </div>
         <div class="widget-body weather-body" id="weatherBody">
           <div class="weather-main">
@@ -141,11 +142,11 @@
         <div class="widget-error" id="weatherError"></div>
       </div>
 
-      <div class="widget widget-system" id="widgetSystem">
+      <div class="widget widget-system" id="widgetSystem" role="region" aria-labelledby="systemTitle">
         <div class="widget-header">
-          <span class="widget-icon">💻</span>
-          <h2>Sistema</h2>
-          <button class="widget-refresh" data-widget="system" aria-label="Aggiorna">↻</button>
+          <span class="widget-icon" aria-hidden="true">💻</span>
+          <h2 id="systemTitle">Sistema</h2>
+          <button class="widget-refresh" data-widget="system" aria-label="Aggiorna sistema">↻</button>
         </div>
         <div class="widget-body system-body" id="systemBody">
           <div class="sys-cards">
@@ -173,11 +174,11 @@
 
     <!-- NEWS ROW -->
     <div class="news-row">
-      <div class="widget widget-news" id="widgetNews">
+      <div class="widget widget-news" id="widgetNews" role="region" aria-labelledby="newsTitle">
         <div class="widget-header">
-          <span class="widget-icon">📰</span>
-          <h2>Ultime notizie tech</h2>
-          <button class="widget-refresh" data-widget="news" aria-label="Aggiorna">↻</button>
+          <span class="widget-icon" aria-hidden="true">📰</span>
+          <h2 id="newsTitle">Ultime notizie tech</h2>
+          <button class="widget-refresh" data-widget="news" aria-label="Aggiorna notizie">↻</button>
         </div>
         <div class="widget-body news-body" id="newsBody">
           <div class="news-list" id="newsList">
@@ -191,10 +192,10 @@
 
     <!-- TOOLS ROW -->
     <div class="tools-row">
-      <div class="widget widget-todo" id="widgetTodo">
+      <div class="widget widget-todo" id="widgetTodo" role="region" aria-labelledby="todoTitle">
         <div class="widget-header">
-          <span class="widget-icon">✅</span>
-          <h2>Todo</h2>
+          <span class="widget-icon" aria-hidden="true">✅</span>
+          <h2 id="todoTitle">Todo</h2>
         </div>
         <div class="widget-body todo-body" id="todoBody">
           <form class="todo-form" id="todoForm">
@@ -205,10 +206,10 @@
         </div>
       </div>
 
-      <div class="widget widget-notes" id="widgetNotes">
+      <div class="widget widget-notes" id="widgetNotes" role="region" aria-labelledby="notesTitle">
         <div class="widget-header">
-          <span class="widget-icon">📝</span>
-          <h2>Note</h2>
+          <span class="widget-icon" aria-hidden="true">📝</span>
+          <h2 id="notesTitle">Note</h2>
         </div>
         <div class="widget-body notes-body" id="notesBody">
           <form class="notes-form" id="notesForm">
@@ -219,10 +220,10 @@
         </div>
       </div>
 
-      <div class="widget widget-bookmarks" id="widgetBookmarks">
+      <div class="widget widget-bookmarks" id="widgetBookmarks" role="region" aria-labelledby="bookmarksTitle">
         <div class="widget-header">
-          <span class="widget-icon">🔖</span>
-          <h2>Bookmarks</h2>
+          <span class="widget-icon" aria-hidden="true">🔖</span>
+          <h2 id="bookmarksTitle">Bookmarks</h2>
         </div>
         <div class="widget-body bookmarks-body" id="bookmarksBody">
           <form class="bookmarks-form" id="bookmarksForm">
@@ -234,10 +235,10 @@
         </div>
       </div>
 
-      <div class="widget widget-timer" id="widgetTimer">
+      <div class="widget widget-timer" id="widgetTimer" role="region" aria-labelledby="timerTitle">
         <div class="widget-header">
-          <span class="widget-icon">⏱️</span>
-          <h2>Timer Pomodoro</h2>
+          <span class="widget-icon" aria-hidden="true">⏱️</span>
+          <h2 id="timerTitle">Timer Pomodoro</h2>
         </div>
         <div class="widget-body timer-body" id="timerBody">
           <div class="timer-display" id="timerDisplay">25:00</div>
@@ -252,10 +253,10 @@
 
     <!-- INFO ROW -->
     <div class="info-row">
-      <div class="widget widget-calendar" id="widgetCalendar">
+      <div class="widget widget-calendar" id="widgetCalendar" role="region" aria-labelledby="calendarTitle">
         <div class="widget-header">
-          <span class="widget-icon">📅</span>
-          <h2>Calendario</h2>
+          <span class="widget-icon" aria-hidden="true">📅</span>
+          <h2 id="calendarTitle">Calendario</h2>
         </div>
         <div class="widget-body calendar-body" id="calendarBody">
           <div class="calendar-header" id="calendarHeader"></div>
@@ -263,44 +264,44 @@
         </div>
       </div>
 
-      <div class="widget widget-network" id="widgetNetwork">
+      <div class="widget widget-network" id="widgetNetwork" role="region" aria-labelledby="networkTitle">
         <div class="widget-header">
-          <span class="widget-icon">🌐</span>
-          <h2>Rete</h2>
-          <button class="widget-refresh" data-widget="network" aria-label="Aggiorna">↻</button>
+          <span class="widget-icon" aria-hidden="true">🌐</span>
+          <h2 id="networkTitle">Rete</h2>
+          <button class="widget-refresh" data-widget="network" aria-label="Aggiorna rete">↻</button>
         </div>
         <div class="widget-body network-body" id="networkBody">
           <div class="network-info" id="networkInfo"></div>
         </div>
       </div>
 
-      <div class="widget widget-storage" id="widgetStorage">
+      <div class="widget widget-storage" id="widgetStorage" role="region" aria-labelledby="storageTitle">
         <div class="widget-header">
-          <span class="widget-icon">💾</span>
-          <h2>Storage</h2>
-          <button class="widget-refresh" data-widget="storage" aria-label="Aggiorna">↻</button>
+          <span class="widget-icon" aria-hidden="true">💾</span>
+          <h2 id="storageTitle">Storage</h2>
+          <button class="widget-refresh" data-widget="storage" aria-label="Aggiorna storage">↻</button>
         </div>
         <div class="widget-body storage-body" id="storageBody">
           <div class="storage-info" id="storageInfo"></div>
         </div>
       </div>
 
-      <div class="widget widget-services" id="widgetServices">
+      <div class="widget widget-services" id="widgetServices" role="region" aria-labelledby="servicesTitle">
         <div class="widget-header">
-          <span class="widget-icon">⚙️</span>
-          <h2>Servizi</h2>
-          <button class="widget-refresh" data-widget="services" aria-label="Aggiorna">↻</button>
+          <span class="widget-icon" aria-hidden="true">⚙️</span>
+          <h2 id="servicesTitle">Servizi</h2>
+          <button class="widget-refresh" data-widget="services" aria-label="Aggiorna servizi">↻</button>
         </div>
         <div class="widget-body services-body" id="servicesBody">
           <div class="services-list" id="servicesList"></div>
         </div>
       </div>
 
-      <div class="widget widget-github" id="widgetGithub">
+      <div class="widget widget-github" id="widgetGithub" role="region" aria-labelledby="githubTitle">
         <div class="widget-header">
-          <span class="widget-icon">🐙</span>
-          <h2>GitHub</h2>
-          <button class="widget-refresh" data-widget="github" aria-label="Aggiorna">↻</button>
+          <span class="widget-icon" aria-hidden="true">🐙</span>
+          <h2 id="githubTitle">GitHub</h2>
+          <button class="widget-refresh" data-widget="github" aria-label="Aggiorna GitHub">↻</button>
         </div>
         <div class="widget-body github-body" id="githubBody">
           <div class="github-user" id="githubUser"></div>
@@ -308,11 +309,11 @@
         </div>
       </div>
 
-      <div class="widget widget-crypto" id="widgetCrypto">
+      <div class="widget widget-crypto" id="widgetCrypto" role="region" aria-labelledby="cryptoTitle">
         <div class="widget-header">
-          <span class="widget-icon">₿</span>
-          <h2>Crypto</h2>
-          <button class="widget-refresh" data-widget="crypto" aria-label="Aggiorna">↻</button>
+          <span class="widget-icon" aria-hidden="true">₿</span>
+          <h2 id="cryptoTitle">Crypto</h2>
+          <button class="widget-refresh" data-widget="crypto" aria-label="Aggiorna crypto">↻</button>
         </div>
         <div class="widget-body crypto-body" id="cryptoBody">
           <div class="crypto-list" id="cryptoList"></div>
@@ -320,13 +321,13 @@
       </div>
     </div>
 
-    <footer class="footer">
-      <p>DevDash v2.1 &mdash; <span id="footerYear">2026</span> &mdash; <a href="https://github.com/Fioru12/devdash" target="_blank">GitHub</a></p>
+    <footer class="footer" role="contentinfo">
+      <p>DevDash v2.1 &mdash; <span id="footerYear">2026</span> &mdash; <a href="https://github.com/Fioru12/devdash" target="_blank" rel="noopener noreferrer">GitHub</a></p>
     </footer>
   </div>
 
   <!-- Shortcut hint -->
-  <div class="shortcut-hint" id="shortcutHint">
+  <div class="shortcut-hint" id="shortcutHint" role="dialog" aria-label="Lista scorciatoie da tastiera" aria-hidden="true">
     <h4>⌨️ Shortcut</h4>
     <div class="shortcut-row"><kbd>R</kbd><span>Refresh tutto</span></div>
     <div class="shortcut-row"><kbd>D</kbd><span>Cambia tema</span></div>
