@@ -168,7 +168,7 @@ function playSound(type) {
 const canvas = document.getElementById('particleCanvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
-const PARTICLE_COUNT = 30;
+const PARTICLE_COUNT = window.innerWidth < 768 ? 10 : 30;
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
