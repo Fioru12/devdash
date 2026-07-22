@@ -1,3 +1,30 @@
+// ==================== LANDING PAGE ====================
+const landingOverlay = document.getElementById('landingOverlay');
+const landingBtn = document.getElementById('landingBtn');
+
+function hideLanding() {
+  if (landingOverlay) {
+    landingOverlay.classList.add('hidden');
+    localStorage.setItem('devdash-landing-seen', 'true');
+  }
+}
+
+function showLanding() {
+  if (landingOverlay) {
+    landingOverlay.classList.remove('hidden');
+  }
+}
+
+if (landingBtn) {
+  landingBtn.addEventListener('click', hideLanding);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && landingOverlay && !landingOverlay.classList.contains('hidden')) {
+    hideLanding();
+  }
+});
+
 // ==================== THEME TOGGLE ====================
 const themeToggle = document.getElementById('themeToggle');
 
@@ -1186,6 +1213,12 @@ function loadWidgetOrder() {
 
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
+  // Check if landing page was already seen
+  const landingSeen = localStorage.getItem('devdash-landing-seen');
+  if (landingSeen) {
+    hideLanding();
+  }
+  
   loadWidgetOrder();
   initDragAndDrop();
   
