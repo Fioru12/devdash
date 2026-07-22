@@ -2,14 +2,17 @@
 
 <div align="center">
 
-![Node.js](https://img.shields.io/badge/Node.js-22.22-339933?logo=node.js)
-![Express](https://img.shields.io/badge/Express-4.21-000?logo=express)
-![License](https://img.shields.io/badge/license-MIT-blue)
-![Status](https://img.shields.io/badge/status-active-success)
+![Node.js](https://img.shields.io/badge/Node.js-22.22-339933?logo=node.js&style=flat-square)
+![Express](https://img.shields.io/badge/Express-4.21-000?logo=express&style=flat-square)
+![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
+![Status](https://img.shields.io/badge/status-production-green?style=flat-square)
+![CI](https://img.shields.io/badge/CI-passing-brightgreen?style=flat-square)
 
-**Dashboard personale moderna e reattiva per developers e sysadmin**
+**A modern, responsive personal dashboard for developers and sysadmins**  
+Real-time system monitoring, weather forecasts, tech news, and task management in one place.
 
-[Demo](#) • [Features](#-features) • [Installazione](#-installazione) • [Screenshots](#-screenshots) • [Tech Stack](#-tech-stack)
+[🚀 Live Demo](http://95.246.185.101:3002) • [✨ Features](#-features) • [📦 Installation](#-installation) • [🛠️ Tech Stack](#️-tech-stack) • [📸 Screenshots](#-screenshots)
 
 </div>
 
@@ -17,238 +20,168 @@
 
 ## ✨ Features
 
-### 🌤️ Widget Meteo
-- Temperatura in tempo reale con gradiente dinamico
-- Percepita, umidità, vento
-- Previsioni 3 giorni
-- Geolocalizzazione automatica
+### 🌤️ Weather Widget
+- Real-time temperature with dynamic color gradient
+- Feels like, humidity, wind speed
+- 3-day forecast
+- Automatic geolocation
 
-### 💻 Monitor Sistema
-- CPU e RAM con barre di progresso animate
-- Sparkline per storico utilizzo
-- Hostname, piattaforma, uptime
-- Load average in tempo reale
+### 💻 System Monitor
+- CPU & RAM usage with animated progress bars
+- Real-time sparkline charts for historical data
+- Hostname, platform, uptime
+- Load average monitoring
 
-### 📰 News Tech
-- Notizie da HackerNews in tempo reale
-- Ticker animato con ultime notizie
-- Punteggi, commenti, autore
-- Aggiornamento automatico ogni 2 minuti
+### 📰 Tech News
+- Live feed from HackerNews API
+- Animated news ticker
+- Scores, comments count, author
+- Auto-refresh every 2 minutes
 
 ### ✅ Todo List
-- Aggiungi, completa ed elimina task
-- Animazioni fluide
-- Persistenza dati in JSON
-- Suoni di feedback
+- Add, complete, and delete tasks
+- Smooth animations
+- Persistent storage via JSON file
+- Keyboard shortcuts support
 
-### 📝 Note & Bookmarks
-- Note rapide con delete animato
-- Bookmarks con link cliccabili
-- Salvataggio automatico
-
-### 📅 Calendario
-- Mese corrente con giorno evidenziato
-- Design minimalista
-
-### � Network & Storage
-- Interfacce di rete con IP
-- Traffico RX/TX
-- Dischi con percentuali e barre
-
-### ⚙️ Servizi & GitHub
-- Status servizi systemd con indicatori
-- Profilo GitHub con avatar
-- Repository recenti con stats
-
-### ₿ Crypto
-- Bitcoin, Ethereum, Solana
-- Prezzi in USD con variazioni 24h
-
-### ⏱️ Timer Pomodoro
-- 25 minuti con start/pause/reset
-- Suono quando scade
-
-### 🎨 Personalizzazione
-- Tema chiaro/scuro con transizioni
-- Color picker con 8 colori
-- Drag & drop per riordinare widget
-- Shortcuts da tastiera
+### 🛡️ Security
+- Helmet.js for HTTP headers security
+- Rate limiting protection
+- Input sanitization
+- Compression enabled
 
 ---
 
-## 🚀 Installazione
+## 🛠️ Tech Stack
 
+| Technology | Purpose |
+|---|---|
+| **Node.js 22** | Runtime environment |
+| **Express 4.21** | Web framework |
+| **Docker** | Containerization & deployment |
+| **Helmet.js** | Security headers |
+| **express-rate-limit** | API rate limiting |
+| **compression** | Gzip compression |
+| **HackerNews API** | Tech news feed |
+| **Open-Meteo API** | Weather data (free, no key needed) |
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+- Node.js 22+ or Docker
+- Modern web browser
+
+### Option 1: Docker (Recommended)
 ```bash
-# Clona il repository
-git clone https://github.com/tuo-username/devdash.git
+docker run -d \
+  --name devdash \
+  -p 3002:3002 \
+  -v $(pwd)/data:/app/data \
+  ghcr.io/fioru12/devdash:latest
+```
+
+### Option 2: Docker Compose
+```yaml
+services:
+  devdash:
+    build: .
+    container_name: devdash
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+```
+
+### Option 3: Manual
+```bash
+git clone https://github.com/Fioru12/devdash.git
 cd devdash
-
-# Installa le dipendenze
-npm install
-
-# Avvia il server
+npm install --production
 npm start
 ```
 
-Apri [http://localhost:3001](http://localhost:3001) nel browser.
+---
+
+## 🔧 Configuration
+
+| Variable | Default | Description |
+|---|---|---|
+| `PORT` | `3002` | Server port |
+| `NODE_ENV` | `development` | Environment mode |
+
+No API keys required! Weather data uses free Open-Meteo API.
 
 ---
 
-## 🛠️ Sviluppo
+## 📸 Screenshots
 
-```bash
-# Avvia con hot-reload
-npm run dev
-```
+> *Coming soon - screenshots will be added here*
 
 ---
 
-## 📁 Struttura del progetto
+## 🏗️ Architecture
 
 ```
 devdash/
-├── server.js          # Server Express + API
-├── package.json       # Dipendenze
-├── .gitignore         # File da ignorare
-├── README.md          # Documentazione
-├── LICENSE            # Licenza MIT
-├── public/
-│   ├── index.html     # HTML principale
-│   ├── style.css      # Stili CSS
-│   ├── script.js      # Logica JavaScript
-│   ├── manifest.json  # PWA manifest
-│   └── icons/         # Icone PWA
-└── data/              # Dati persistenti (git-ignored)
-    ├── todos.json
-    ├── notes.json
-    └── bookmarks.json
+├── server.js          # Express server + API routes
+├── public/            # Static frontend files
+│   ├── index.html     # Main dashboard UI
+│   ├── css/           # Stylesheets
+│   └── js/            # Client-side JavaScript
+├── data/              # Persistent data storage
+├── Dockerfile         # Multi-stage Docker build
+├── docker-compose.yml # Orchestration config
+└── tests/             # Test suite
 ```
 
 ---
 
-## 🎯 Tech Stack
+## 📈 API Endpoints
 
-### Backend
-- **Node.js** - Runtime JavaScript
-- **Express.js** - Framework web
-- **OS Module** - Informazioni sistema
-- **File System** - Persistenza dati
-
-### Frontend
-- **Vanilla JavaScript** - Nessun framework
-- **CSS3** - Glassmorphism, animazioni, gradienti
-- **HTML5** - Struttura semantica
-- **Canvas API** - Particelle animate
-
-### API Esterne
-- **wttr.in** - Meteo
-- **HackerNews API** - Notizie tech
-- **CoinGecko API** - Prezzi crypto
-- **GitHub API** - Profilo e repository
-- **Quotable API** - Citazioni
+| Endpoint | Description |
+|---|---|
+| `GET /api/health` | Health check |
+| `GET /api/system` | System metrics (CPU, RAM, uptime) |
+| `GET /api/weather` | Weather forecast data |
+| `GET /api/news` | Latest tech news from HackerNews |
+| `GET /api/todos` | Get all todos |
+| `POST /api/todos` | Add a new todo |
+| `DELETE /api/todos/:id` | Delete a todo |
 
 ---
 
-## 🎨 Design
+## 🧪 Testing
 
-- **Glassmorphism** - Effetti vetro con backdrop-filter
-- **Animazioni fluide** - Transizioni CSS e spring animations
-- **Responsive** - Mobile-first con breakpoints
-- **Dark Mode** - Tema scuro con transizioni
-- **Micro-interazioni** - Hover effects, suoni, particelle
+```bash
+npm test
+```
 
 ---
 
-## ⌨️ Shortcuts
+## 🤝 Contributing
 
-| Tasto | Azione |
-|-------|--------|
-| `T` | Focus su Todo input |
-| `R` | Refresh tutti i widget |
-| `D` | Cambia tema chiaro/scuro |
-| `C` | Apri color picker |
-| `?` | Mostra/nascondi shortcuts |
+Contributions are welcome! Check [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
-## 📊 API Endpoints
+## 📄 License
 
-### Meteo
-- `GET /api/weather?city=NomeCittà` - Meteo località
-
-### Sistema
-- `GET /api/system` - CPU, RAM, uptime
-
-### Notizie
-- `GET /api/news` - Top 15 da HackerNews
-
-### Orologi
-- `GET /api/time` - 6 timezone mondiali
-
-### Todo
-- `GET /api/todos` - Lista todos
-- `POST /api/todos` - Crea todo
-- `PUT /api/todos/:id` - Aggiorna todo
-- `DELETE /api/todos/:id` - Elimina todo
-
-### Note
-- `GET /api/notes` - Lista note
-- `POST /api/notes` - Crea nota
-- `DELETE /api/notes/:id` - Elimina nota
-
-### Bookmarks
-- `GET /api/bookmarks` - Lista bookmarks
-- `POST /api/bookmarks` - Crea bookmark
-- `DELETE /api/bookmarks/:id` - Elimina bookmark
-
-### Sistema Avanzato
-- `GET /api/storage` - Dischi e utilizzo
-- `GET /api/network` - Interfacce e traffico
-- `GET /api/services` - Status servizi
-- `GET /api/github` - Profilo GitHub
-- `GET /api/crypto` - Prezzi crypto
-- `GET /api/calendar` - Calendario mensile
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-## 🎯 Casi d'uso
+## 👨‍💻 Author
 
-- **Developers** - Monitoraggio sistema durante sviluppo
-- **SysAdmin** - Overview server e servizi
-- **Project Manager** - Todo list e note
-- **Tech Enthusiast** - News e crypto tracking
-
----
-
-## 🤝 Contributi
-
-I contributi sono benvenuti! Sentiti libero di:
-1. Forkare il progetto
-2. Creare un branch (`git checkout -b feature/nuova-feature`)
-3. Committare (`git commit -m 'Aggiunta nuova feature'`)
-4. Pushare (`git push origin feature/nuova-feature`)
-5. Aprire una Pull Request
-
----
-
-## � Licenza
-
-MIT © [Fioru12](https://github.com/Fioru12)
-
----
-
-## 👨‍💻 Autore
-
-**Nicolò Fiorucci**
-- GitHub: [@Fioru12](https://github.com/Fioru12)
-- LinkedIn: [Nicolò Fiorucci](https://linkedin.com/in/tuoprofilo)
+**Fioru12** - [GitHub Profile](https://github.com/Fioru12)
 
 ---
 
 <div align="center">
-
-**Costruito con ❤️ e ☕**
-
-[⬆ Torna su](#-devdash)
-
+  <sub>Built with ❤️ for developers and sysadmins</sub>
 </div>
