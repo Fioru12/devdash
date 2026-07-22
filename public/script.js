@@ -9,12 +9,6 @@ function hideLanding() {
   }
 }
 
-function showLanding() {
-  if (landingOverlay) {
-    landingOverlay.classList.remove('hidden');
-  }
-}
-
 if (landingBtn) {
   landingBtn.addEventListener('click', hideLanding);
 }
