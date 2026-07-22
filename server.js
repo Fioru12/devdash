@@ -1,13 +1,26 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
 const os = require('os');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
+app.use(helmet());
+app.use(compression());
 app.use(express.json());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Troppe richieste, riprova più tardi'
+});
+app.use(limiter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==================== Health Check ====================
