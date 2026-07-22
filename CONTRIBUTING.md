@@ -1,6 +1,6 @@
-# Contributi a DevDash
+# Contributi a DevMonitor
 
-Grazie per il tuo interesse nel contribuire a DevDash! 🎉
+Grazie per il tuo interesse nel contribuire a DevMonitor! 🎉
 
 ## 🚀 Come Contribuire
 

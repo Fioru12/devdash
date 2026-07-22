@@ -1,5 +1,5 @@
 /**
- * DevDash - API Tests
+ * DevMonitor - API Tests
  * Run: npm test
  */
 
@@ -26,7 +26,7 @@ function request(path) {
 
 // Test suite
 async function runTests() {
-  console.log('🧪 DevDash API Tests\n');
+  console.log('🧪 DevMonitor API Tests\n');
   let passed = 0;
   let failed = 0;
 

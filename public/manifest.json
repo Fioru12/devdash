@@ -1,6 +1,6 @@
 {
-  "name": "DevDash",
-  "short_name": "DevDash",
+  "name": "DevMonitor",
+  "short_name": "DevMonitor",
   "description": "La tua dashboard personale con meteo, orologi, citazioni e monitor sistema",
   "start_url": "/",
   "display": "standalone",

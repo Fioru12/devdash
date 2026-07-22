@@ -545,7 +545,7 @@ app.get('*', (req, res) => {
 
 // ==================== Start ====================
 app.listen(PORT, () => {
-  console.log(`✨ DevDash avviato su porta ${PORT}`);
+  console.log(`✨ DevMonitor avviato su porta ${PORT}`);
   console.log(`🌐 Apri http://localhost:${PORT} nel browser`);
 });
 
