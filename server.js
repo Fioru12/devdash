@@ -10,6 +10,16 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ==================== Health Check ====================
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    version: '2.1.0',
+  });
+});
+
 // ==================== API ====================
 
 // --- Meteo ---
